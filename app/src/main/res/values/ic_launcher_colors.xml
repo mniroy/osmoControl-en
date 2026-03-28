@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background_top">#F8FAFC</color>
+    <color name="ic_launcher_background_bottom">#E2E8F0</color>
+    <color name="ic_launcher_body_top">#2C2F35</color>
+    <color name="ic_launcher_body_bottom">#111318</color>
+    <color name="ic_launcher_bezel">#0D0F13</color>
+    <color name="ic_launcher_screen_top">#C5D2EE</color>
+    <color name="ic_launcher_screen_bottom">#93A8DA</color>
+    <color name="ic_launcher_button_outer">#1C1E24</color>
+    <color name="ic_launcher_button_inner">#4C5058</color>
+    <color name="ic_launcher_button_inner_alt">#565B64</color>
+    <color name="ic_launcher_ring">#FF4D4F</color>
+    <color name="ic_launcher_shadow">#33000000</color>
+    <color name="ic_launcher_shadow_fade">#00000000</color>
+    <color name="ic_launcher_monochrome">#FFFFFFFF</color>
+</resources>
