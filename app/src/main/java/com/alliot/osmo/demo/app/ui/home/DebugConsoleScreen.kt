@@ -162,7 +162,7 @@ private fun DebugSessionSection(
     val canScan = state.selectedMode == SessionTransportMode.FAKE || (permissionsReady && state.sessionStatus.bluetoothEnabled)
     val permissionCta = state.permissionCta
 
-    HomeSectionCard(title = "传输与会话") {
+    HomeSectionCard(title = "Transport & Session") {
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
             SessionTransportMode.entries.forEachIndexed { index, mode ->
                 SegmentedButton(
@@ -174,7 +174,7 @@ private fun DebugSessionSection(
                     enabled = !isBusy,
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = SessionTransportMode.entries.size),
                 ) {
-                    Text(if (mode == SessionTransportMode.FAKE) "模拟" else "真机")
+                    Text(if (mode == SessionTransportMode.FAKE) "Simulate" else "Real Device")
                 }
             }
         }
@@ -185,7 +185,7 @@ private fun DebugSessionSection(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "真机模式前置条件未满足，需要先处理权限或系统设置。",
+                    text = "Real device mode prerequisites not met, need to resolve permissions or system settings first.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                 )
@@ -198,17 +198,17 @@ private fun DebugSessionSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            SummaryPill(modifier = Modifier.weight(1f), title = "连接", value = debugConnectionSummary(state))
-            SummaryPill(modifier = Modifier.weight(1f), title = "握手", value = debugHandshakeLabel(state.sessionStatus.handshakeStage))
+            SummaryPill(modifier = Modifier.weight(1f), title = "Connect", value = debugConnectionSummary(state))
+            SummaryPill(modifier = Modifier.weight(1f), title = "Handshake", value = debugHandshakeLabel(state.sessionStatus.handshakeStage))
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            SummaryPill(modifier = Modifier.weight(1f), title = "设备", value = debugConsoleConnectedDeviceName(state))
+            SummaryPill(modifier = Modifier.weight(1f), title = "Device", value = debugConsoleConnectedDeviceName(state))
             SummaryPill(
                 modifier = Modifier.weight(1f),
-                title = "能力",
+                title = "Capability",
                 value = debugConsoleConnectedCapabilityLabel(state),
             )
         }
@@ -218,12 +218,12 @@ private fun DebugSessionSection(
         ) {
             SummaryPill(
                 modifier = Modifier.weight(1f),
-                title = "广播唤醒",
-                value = if (state.sessionStatus.wakeAdvertisingSupported) "支持" else "不支持",
+                title = "Broadcast Wake",
+                value = if (state.sessionStatus.wakeAdvertisingSupported) "Supported" else "Not Supported",
             )
             SummaryPill(
                 modifier = Modifier.weight(1f),
-                title = "协议族",
+                title = "Protocol Family",
                 value = state.sessionStatus.connectedProfile?.protocolFamily?.name ?: "-",
             )
         }
@@ -237,14 +237,14 @@ private fun DebugSessionSection(
                     onClick = { onVerifyModeSelected(0) },
                     enabled = !isBusy && state.sessionStatus.handshakeVerifyMode != 0,
                 ) {
-                    Text("已配对(0)")
+                    Text("Paired(0)")
                 }
                 HomeOutlinedButton(
                     modifier = Modifier.weight(1f),
                     onClick = { onVerifyModeSelected(1) },
                     enabled = !isBusy && state.sessionStatus.handshakeVerifyMode != 1,
                 ) {
-                    Text("配对中(1)")
+                    Text("Pairing(1)")
                 }
             }
         }
@@ -253,13 +253,13 @@ private fun DebugSessionSection(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             HomeFilledButton(modifier = Modifier.weight(1f), onClick = onStartScan, enabled = !isBusy && !state.sessionStatus.scanning && canScan) {
-                Text("扫描")
+                Text("Scan")
             }
             HomeOutlinedButton(modifier = Modifier.weight(1f), onClick = onStopScan, enabled = !isBusy && state.sessionStatus.scanning) {
-                Text("停止")
+                Text("Stop")
             }
             HomeOutlinedButton(modifier = Modifier.weight(1f), onClick = onDisconnect, enabled = !isBusy && state.sessionStatus.connectedDevice != null) {
-                Text("断开")
+                Text("Disconnect")
             }
         }
     }
@@ -281,19 +281,19 @@ private fun DebugDeviceListSection(
             .toSet()
         deviceRows.filter { it.macAddress in filteredMacs }
     }
-    HomeSectionCard(title = "设备列表") {
+    HomeSectionCard(title = "Device List") {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.deviceFilterQuery,
             onValueChange = onFilterChange,
-            label = { Text("筛选设备") },
-            placeholder = { Text("按名称或 MAC 搜索") },
+            label = { Text("Filter Devices") },
+            placeholder = { Text("Search by Name or MAC") },
             singleLine = true,
             supportingText = {
                 val summary = if (state.deviceFilterQuery.isBlank()) {
-                    "已发现 ${state.discoveredDevices.size} 台设备"
+                    "Found ${state.discoveredDevices.size} devices"
                 } else {
-                    "匹配 ${filteredDevices.size} / ${state.discoveredDevices.size}"
+                    "Matched ${filteredDevices.size} / ${state.discoveredDevices.size}"
                 }
                 Text(summary)
             },
@@ -301,15 +301,15 @@ private fun DebugDeviceListSection(
         if (state.discoveredDevices.isEmpty()) {
             Text(
                 text = when {
-                    state.sessionStatus.scanning -> "扫描中..."
-                    state.selectedMode == SessionTransportMode.REAL && state.permissionCta != null -> "先完成权限和系统前置条件"
-                    else -> "暂无设备"
+                    state.sessionStatus.scanning -> "Scanning..."
+                    state.selectedMode == SessionTransportMode.REAL && state.permissionCta != null -> "Complete permissions and system prerequisites first"
+                    else -> "No Devices"
                 },
                 style = MaterialTheme.typography.bodySmall,
             )
         } else if (filteredDevices.isEmpty()) {
             Text(
-                text = "没有匹配的设备",
+                text = "No matching devices",
                 style = MaterialTheme.typography.bodySmall,
             )
         } else {
@@ -332,7 +332,7 @@ private fun DebugDeviceListSection(
                         },
                         enabled = !isBusy && !device.isConnected,
                     ) {
-                        Text(if (device.isConnected) "已连接" else "连接")
+                        Text(if (device.isConnected) "Connected" else "Connect")
                     }
                 }
             }
@@ -377,7 +377,7 @@ private fun DebugCommandsSection(
         )
     }
 
-    HomeSectionCard(title = "命令与 GPS") {
+    HomeSectionCard(title = "Commands & GPS") {
         uiModel.capabilityNotice?.let { notice ->
             Text(
                 text = notice,
@@ -419,14 +419,14 @@ private fun DebugCommandsSection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                SummaryPill(modifier = Modifier.weight(1f), title = "GPS 自动同步", value = if (state.sessionStatus.gpsAutoPushEnabled) "开启" else "关闭")
-                SummaryPill(modifier = Modifier.weight(1f), title = "定位请求", value = "${state.sessionStatus.gpsLocationRequestHz}Hz")
+                SummaryPill(modifier = Modifier.weight(1f), title = "GPS Auto Sync", value = if (state.sessionStatus.gpsAutoPushEnabled) "Turn On" else "Close")
+                SummaryPill(modifier = Modifier.weight(1f), title = "Location Request", value = "${state.sessionStatus.gpsLocationRequestHz}Hz")
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text("持续同步")
+                Text("Continuous Sync")
                 Switch(
                     checked = state.sessionStatus.gpsAutoPushEnabled,
                     onCheckedChange = onSetGpsSyncEnabled,
@@ -457,7 +457,7 @@ private fun DebugCommandsSection(
                         onClick = { onSetLocationRequestFrequency(hz) },
                         enabled = uiModel.gpsControlsEnabled,
                     ) {
-                        Text("定位${hz}Hz")
+                        Text("Location ${hz}Hz")
                     }
                 }
             }
@@ -466,7 +466,7 @@ private fun DebugCommandsSection(
                 onClick = onPushGps,
                 enabled = uiModel.gpsControlsEnabled,
             ) {
-                Text("推送示例 GPS")
+                Text("Push Mock GPS")
             }
         }
 
@@ -478,7 +478,7 @@ private fun DebugCommandsSection(
             !uiModel.showGpsSection
         ) {
             Text(
-                text = "暂无已验证的预置调试命令，可继续使用日志与手动报文工具。",
+                text = "No verified preset debug commands available, please use log and manual messaging.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -488,27 +488,27 @@ private fun DebugCommandsSection(
 
 @Composable
 private fun DebugStatusSection(state: DebugHomeState) {
-    HomeSectionCard(title = "解析状态") {
+    HomeSectionCard(title = "Parsing Status") {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            SummaryPill(modifier = Modifier.weight(1f), title = "最近推送", value = state.cameraStatus.lastPushCommandId)
-            SummaryPill(modifier = Modifier.weight(1f), title = "录制中", value = if (state.cameraStatus.recording) "是" else "否")
+            SummaryPill(modifier = Modifier.weight(1f), title = "Last Push", value = state.cameraStatus.lastPushCommandId)
+            SummaryPill(modifier = Modifier.weight(1f), title = "Recording", value = if (state.cameraStatus.recording) "Yes" else "No")
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            SummaryPill(modifier = Modifier.weight(1f), title = "模式", value = state.cameraStatus.modeName.ifBlank { state.cameraStatus.modeLabel })
-            SummaryPill(modifier = Modifier.weight(1f), title = "状态", value = state.cameraStatus.stateLabel)
+            SummaryPill(modifier = Modifier.weight(1f), title = "Mode", value = state.cameraStatus.modeName.ifBlank { state.cameraStatus.modeLabel })
+            SummaryPill(modifier = Modifier.weight(1f), title = "Status", value = state.cameraStatus.stateLabel)
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            SummaryPill(modifier = Modifier.weight(1f), title = "录制结果", value = state.sessionStatus.lastRecordResult ?: "-")
-            SummaryPill(modifier = Modifier.weight(1f), title = "唤醒结果", value = state.sessionStatus.lastWakeResult ?: "-")
+            SummaryPill(modifier = Modifier.weight(1f), title = "Record Result", value = state.sessionStatus.lastRecordResult ?: "-")
+            SummaryPill(modifier = Modifier.weight(1f), title = "Wake Result", value = state.sessionStatus.lastWakeResult ?: "-")
         }
         Text(
             text = state.cameraStatus.lastPushSummary,
@@ -524,20 +524,20 @@ private fun DebugLogsSection(
     onClearLogs: () -> Unit,
     onCopyRecent: () -> Unit,
 ) {
-    HomeSectionCard(title = "日志") {
+    HomeSectionCard(title = "Log") {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             HomeOutlinedButton(modifier = Modifier.weight(1f), onClick = onClearLogs) {
-                Text("清空显示")
+                Text("Clear Display")
             }
             HomeOutlinedButton(modifier = Modifier.weight(1f), onClick = onCopyRecent, enabled = groups.isNotEmpty()) {
-                Text("复制最近日志")
+                Text("Copy Latest Log")
             }
         }
         if (groups.isEmpty()) {
-            Text("暂无日志", style = MaterialTheme.typography.bodySmall)
+            Text("No Logs", style = MaterialTheme.typography.bodySmall)
         } else {
             groups.forEach { group ->
                 var expanded by rememberSaveable(group.category.name) { mutableStateOf(group.expandedByDefault) }
@@ -548,7 +548,7 @@ private fun DebugLogsSection(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text(
-                        text = "${group.category.name} (${group.entries.size}) ${if (expanded) "收起" else "展开"}",
+                        text = "${group.category.name} (${group.entries.size}) ${if (expanded) "Collapse" else "Expand"}",
                         fontWeight = FontWeight.SemiBold,
                     )
                     if (expanded) {
@@ -577,7 +577,7 @@ private fun DebugManualCommandSection(
     val validation = remember(value) { validateManualHexInput(value) }
     val showError = value.isNotBlank() && !validation.isValid
 
-    HomeSectionCard(title = "手动命令") {
+    HomeSectionCard(title = "Manual Command") {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = value,
@@ -589,7 +589,7 @@ private fun DebugManualCommandSection(
                 if (showError) {
                     Text(validation.errorMessage.orEmpty())
                 } else {
-                    Text("支持空格分隔，发送前会自动归一化。")
+                    Text("Supports space separation, will be normalized automatically before sending.")
                 }
             },
         )
@@ -602,7 +602,7 @@ private fun DebugManualCommandSection(
             },
             enabled = validation.isValid,
         ) {
-            Text("发送")
+            Text("Send")
         }
     }
 }
@@ -660,16 +660,16 @@ private fun handleDebugAction(
 }
 
 private fun debugConnectionSummary(state: DebugHomeState): String = when {
-    state.sessionStatus.protocolReady -> "协议已连接"
-    state.sessionStatus.connectedDevice != null -> "蓝牙已连接"
-    state.sessionStatus.scanning -> "扫描中"
-    else -> "未连接"
+    state.sessionStatus.protocolReady -> "Protocol Connected"
+    state.sessionStatus.connectedDevice != null -> "Bluetooth Connected"
+    state.sessionStatus.scanning -> "Scanning"
+    else -> "Not Connected"
 }
 
 private fun debugHandshakeLabel(stage: HandshakeStage): String = when (stage) {
-    HandshakeStage.IDLE -> "空闲"
-    HandshakeStage.REQUEST_SENT -> "请求已发"
-    HandshakeStage.CAMERA_CONFIRMATION_RECEIVED -> "相机确认"
-    HandshakeStage.COMPLETED -> "完成"
-    HandshakeStage.REJECTED -> "拒绝"
+    HandshakeStage.IDLE -> "Idle"
+    HandshakeStage.REQUEST_SENT -> "Request Sent"
+    HandshakeStage.CAMERA_CONFIRMATION_RECEIVED -> "Camera Confirmed"
+    HandshakeStage.COMPLETED -> "Complete"
+    HandshakeStage.REJECTED -> "Rejected"
 }

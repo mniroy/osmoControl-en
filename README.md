@@ -1,35 +1,35 @@
-# 欧思魔控 (osmoControl)
+# osmoControl
 
-[GitHub 仓库](https://github.com/AlliotTech/osmoControl)
+[GitHub Repository](https://github.com/AlliotTech/osmoControl)
 
-## 界面预览
+## UI Preview
 
-| 工作台 | 模式切换 | 调试台 |
+| Workbench | Mode Switch | Debug Console |
 | --- | --- | --- |
-| ![工作台界面](./screenshot/workspace.png) | ![模式切换界面](./screenshot/mothod-switch.png) | ![调试台界面](./screenshot/debug.png) |
+| ![Workbench Interface](./screenshot/workspace.png) | ![Mode Switch Interface](./screenshot/mothod-switch.png) | ![Debug Console Interface](./screenshot/debug.png) |
 
-## 项目简介
+## Project Introduction
 
-欧思魔控（osmoControl）是一个面向 Osmo 设备的 Android 控制 Demo，目标是用手机替代硬件蓝牙遥控器的绝大部分常用功能，便于演示、联调和功能验证。
+osmoControl is an Android control demo designed for Osmo devices. The goal is to use a smartphone to replace most common functions of a hardware Bluetooth remote control, facilitating demonstrations, joint debugging, and feature validation.
 
-项目除了覆盖基础蓝牙控制能力外，还支持将手机侧 GPS 数据上报到设备链路中，用于定位信息嵌入视频或相关素材流程的验证。
+In addition to basic Bluetooth control capabilities, the project supports pushing smartphone GPS data to the device link, which is used for validating the process of embedding location information into videos or related media materials.
 
-## 核心能力
+## Core Capabilities
 
-- 扫描并连接 Osmo 设备，完成蓝牙会话建立
-- 替代硬件蓝牙遥控器的大部分常用控制能力
-- 支持录像控制、拍摄触发、模式切换、休眠与唤醒等操作
-- 支持 GPS 推送、自动同步和频率调节
-- 支持调试台查看状态、日志与协议交互结果
-- 支持假设备模式，便于无真机时进行界面演示和流程联调
+- Scan and connect to Osmo devices to establish a Bluetooth session.
+- Replaces most common control functions of a hardware Bluetooth remote.
+- Supports recording control, shooting trigger, mode switching, sleep, and wake operations.
+- Supports GPS push, automatic synchronization, and frequency adjustment.
+- Supports debug console to view status, logs, and protocol interaction results.
+- Supports fake device mode for UI demonstrations and process debugging without a real device.
 
-## 适用场景
+## Applicable Scenarios
 
-- 作为硬件蓝牙遥控器的移动端替代方案原型
-- 验证相机控制链路与交互流程
-- 验证 GPS 上报与视频定位信息嵌入相关能力
-- 用于内部演示、测试联调和协议调试
+- As a mobile alternative prototype for a hardware Bluetooth remote.
+- Validate camera control links and interaction processes.
+- Validate GPS reporting and video location information embedding capabilities.
+- Used for internal demonstrations, test debugging, and protocol debugging.
 
-## 说明
+## Note
 
-这是一个 Demo / 调试项目，重点在于验证控制能力与通信流程，不以消费级正式产品形态为目标。
+This is a Demo / debugging project. The focus is on validating control capabilities and communication flows, not aiming to be a consumer-grade official product.

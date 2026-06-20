@@ -10,55 +10,55 @@ import com.alliot.osmo.demo.session.model.SessionStatus
 import com.alliot.osmo.demo.session.model.SessionTransportMode
 import java.util.Locale
 
-private const val MODE_SWITCH_BLOCKED_RECORDING = "录制中"
-private const val MODE_SWITCH_BLOCKED_NOT_CONNECTED = "请先连接设备"
-private const val MODE_SWITCH_BLOCKED_SCANNING = "正在搜索设备"
-private const val MODE_SWITCH_BLOCKED_HANDSHAKE = "设备准备中"
-private const val MODE_SWITCH_BLOCKED_SLEEPING = "设备已休眠"
-private const val MODE_SWITCH_BLOCKED_UNSUPPORTED = "当前设备仅支持调试控制"
-private const val RECORD_BLOCKED_NOT_CONNECTED = "请先连接设备"
-private const val RECORD_BLOCKED_SCANNING = "正在搜索设备"
-private const val RECORD_BLOCKED_HANDSHAKE = "设备准备中"
-private const val RECORD_BLOCKED_SLEEPING = "设备已休眠"
-private const val RECORD_BLOCKED_UNSUPPORTED = "当前设备仅支持调试控制"
-private const val GPS_BLOCKED_NOT_CONNECTED = "请先连接设备"
-private const val GPS_BLOCKED_SCANNING = "正在搜索设备"
-private const val GPS_BLOCKED_HANDSHAKE = "设备准备中"
-private const val GPS_BLOCKED_SLEEPING = "设备已休眠"
-private const val GPS_BLOCKED_UNSUPPORTED = "当前设备仅支持调试控制"
+private const val MODE_SWITCH_BLOCKED_RECORDING = "Recording"
+private const val MODE_SWITCH_BLOCKED_NOT_CONNECTED = "Please connect device first"
+private const val MODE_SWITCH_BLOCKED_SCANNING = "Searching for devices"
+private const val MODE_SWITCH_BLOCKED_HANDSHAKE = "Device Preparing"
+private const val MODE_SWITCH_BLOCKED_SLEEPING = "Device Sleeping"
+private const val MODE_SWITCH_BLOCKED_UNSUPPORTED = "Current device only supports debug control"
+private const val RECORD_BLOCKED_NOT_CONNECTED = "Please connect device first"
+private const val RECORD_BLOCKED_SCANNING = "Searching for devices"
+private const val RECORD_BLOCKED_HANDSHAKE = "Device Preparing"
+private const val RECORD_BLOCKED_SLEEPING = "Device Sleeping"
+private const val RECORD_BLOCKED_UNSUPPORTED = "Current device only supports debug control"
+private const val GPS_BLOCKED_NOT_CONNECTED = "Please connect device first"
+private const val GPS_BLOCKED_SCANNING = "Searching for devices"
+private const val GPS_BLOCKED_HANDSHAKE = "Device Preparing"
+private const val GPS_BLOCKED_SLEEPING = "Device Sleeping"
+private const val GPS_BLOCKED_UNSUPPORTED = "Current device only supports debug control"
 private const val CAMERA_MODE_PHOTO = 0x05
 
 internal fun isPhotoCaptureMode(snapshot: CameraStatusSnapshot): Boolean = snapshot.mode == CAMERA_MODE_PHOTO
 
 internal fun primaryActionButtonLabel(snapshot: CameraStatusSnapshot, enabled: Boolean): String {
     return when {
-        !enabled -> "未就绪"
-        isPhotoCaptureMode(snapshot) && snapshot.recording -> "拍照中"
-        isPhotoCaptureMode(snapshot) -> "拍照"
-        snapshot.recording -> "停止"
-        else -> "录制"
+        !enabled -> "Not Ready"
+        isPhotoCaptureMode(snapshot) && snapshot.recording -> "Taking Photo"
+        isPhotoCaptureMode(snapshot) -> "Photo"
+        snapshot.recording -> "Stop"
+        else -> "Record"
     }
 }
 
 internal fun primaryActionContentDescription(snapshot: CameraStatusSnapshot): String {
     return when {
-        isPhotoCaptureMode(snapshot) && snapshot.recording -> "拍照中"
-        isPhotoCaptureMode(snapshot) -> "拍照"
-        snapshot.recording -> "停止录制"
-        else -> "开始录制"
+        isPhotoCaptureMode(snapshot) && snapshot.recording -> "Taking Photo"
+        isPhotoCaptureMode(snapshot) -> "Photo"
+        snapshot.recording -> "Stop Recording"
+        else -> "Start Recording"
     }
 }
 
 internal fun primaryActionStatusText(state: DebugHomeState): String {
     val snapshot = state.cameraStatus
     return when {
-        isPhotoCaptureMode(snapshot) && snapshot.recording -> "拍照中"
-        snapshot.recording -> "录制中"
-        state.sessionStatus.sleeping -> "设备休眠"
-        state.sessionStatus.protocolReady -> "控制就绪"
-        state.sessionStatus.connectedDevice != null -> "设备准备中"
-        state.sessionStatus.scanning -> "搜索中"
-        else -> "待命"
+        isPhotoCaptureMode(snapshot) && snapshot.recording -> "Taking Photo"
+        snapshot.recording -> "Recording"
+        state.sessionStatus.sleeping -> "Device Sleeping"
+        state.sessionStatus.protocolReady -> "Control Ready"
+        state.sessionStatus.connectedDevice != null -> "Device Preparing"
+        state.sessionStatus.scanning -> "Searching"
+        else -> "Standby"
     }
 }
 
@@ -66,12 +66,12 @@ internal fun primaryActionHelperText(state: DebugHomeState): String {
     val snapshot = state.cameraStatus
     val workbench = state.workbenchUiModel
     return when {
-        isPhotoCaptureMode(snapshot) && snapshot.recording -> "拍照进行中，请等待设备返回预览状态。"
-        snapshot.recording -> "录制进行中，模式切换已锁定。"
-        state.sessionStatus.sleeping -> "设备已休眠，请先唤醒。"
+        isPhotoCaptureMode(snapshot) && snapshot.recording -> "Taking photo, please wait for the device to return to preview state."
+        snapshot.recording -> "Recording in progress, mode switching is locked."
+        state.sessionStatus.sleeping -> "Device has slept, please wake it up first."
         workbench.recordActionDisabledReason != null -> workbench.recordActionDisabledReason
-        workbench.modeSwitchBlockedReason != null -> "模式切换：${workbench.modeSwitchBlockedReason}"
-        else -> "主操作保持在页面中心，适合默认遥控路径。"
+        workbench.modeSwitchBlockedReason != null -> "Switch Mode: ${workbench.modeSwitchBlockedReason}"
+        else -> "Primary controls are centered, suitable for default remote control path."
     }
 }
 
@@ -85,11 +85,11 @@ fun mapWorkbenchUiModel(state: DebugHomeState): WorkbenchUiModel {
     val debugOnlyProfile = capabilities != null && !capabilities.supportsWorkbench
 
     val connectionSummary = when {
-        sleeping -> "设备已休眠"
-        protocolReady -> "控制已就绪"
-        connected -> "设备已连接"
-        status.scanning -> "正在搜索设备"
-        else -> "未连接设备"
+        sleeping -> "Device Sleeping"
+        protocolReady -> "Control is Ready"
+        connected -> "Device Connected"
+        status.scanning -> "Searching for devices"
+        else -> "Device Not Connected"
     }
 
     val recordActionEnabled = protocolReady && !sleeping && (capabilities?.supportsRecordKey ?: true) && !debugOnlyProfile
@@ -164,22 +164,22 @@ private fun mapWorkbenchModeOptions(supportedModes: Set<Int>?): List<WorkbenchMo
 
 internal fun workbenchModeLabel(mode: Int): String {
     return when (mode) {
-        0x00 -> "慢动作"
-        0x01 -> "视频"
-        0x02 -> "静止延时"
-        0x05 -> "拍照"
-        0x0A -> "运动延时"
-        0x28 -> "夜景"
-        0x34 -> "人物跟随"
-        0x38 -> "360 全景视频"
-        0x3A -> "360 延时"
-        0x3C -> "360 自拍"
-        0x3F -> "360 全景照片"
-        0x41 -> "360 超广角"
-        0x43 -> "360 定格"
-        0x44 -> "360 夜景"
-        0x4A -> "单镜夜景"
-        else -> "模式 0x${mode.toString(16)}"
+        0x00 -> "Slow Motion"
+        0x01 -> "Video"
+        0x02 -> "Timelapse"
+        0x05 -> "Photo"
+        0x0A -> "Motionlapse"
+        0x28 -> "Night Mode"
+        0x34 -> "ActiveTrack"
+        0x38 -> "360 Panorama Video"
+        0x3A -> "360 Timelapse"
+        0x3C -> "360 Selfie"
+        0x3F -> "360 Panorama Photo"
+        0x41 -> "360 Ultra Wide"
+        0x43 -> "360 Stop Motion"
+        0x44 -> "360 Night Mode"
+        0x4A -> "Single Lens Night"
+        else -> "Mode 0x${mode.toString(16)}"
     }
 }
 
@@ -230,7 +230,7 @@ fun mapPermissionCta(state: DebugHomeState): PermissionCta? {
     if (!missing) return null
 
     val action = if (prereq.requiresSettingsAction) PermissionAction.OPEN_SETTINGS else PermissionAction.REQUEST
-    val label = if (prereq.requiresSettingsAction) "前往设置" else "开启权限"
+    val label = if (prereq.requiresSettingsAction) "Go to Settings" else "Grant Permission"
 
     return PermissionCta(label = label, action = action)
 }
@@ -256,54 +256,54 @@ private fun mapStatusOverviewItems(state: DebugHomeState): List<StatusOverviewIt
     val statusReady = session.protocolReady
     if (!statusReady) {
         return listOf(
-            StatusOverviewItem(title = "录制时长", value = "--:--"),
-            StatusOverviewItem(title = "剩余时长", value = "--:--"),
-            StatusOverviewItem(title = "剩余容量", value = "--"),
-            StatusOverviewItem(title = "电量", value = "--"),
-            StatusOverviewItem(title = "分辨率 / 帧率", value = "等待设备状态"),
-            StatusOverviewItem(title = "增稳 / GPS", value = "等待设备状态"),
+            StatusOverviewItem(title = "Recording Time", value = "--:--"),
+            StatusOverviewItem(title = "Remaining Time", value = "--:--"),
+            StatusOverviewItem(title = "Remaining Capacity", value = "--"),
+            StatusOverviewItem(title = "Battery", value = "--"),
+            StatusOverviewItem(title = "Resolution / FPS", value = "Waiting for device status"),
+            StatusOverviewItem(title = "Stabilization / GPS", value = "Waiting for device status"),
         )
     }
     if (session.sleeping) {
         return listOf(
-            StatusOverviewItem(title = "录制时长", value = "--:--"),
-            StatusOverviewItem(title = "剩余时长", value = "--:--"),
-            StatusOverviewItem(title = "剩余容量", value = "--"),
-            StatusOverviewItem(title = "电量", value = "--"),
-            StatusOverviewItem(title = "分辨率 / 帧率", value = "设备已休眠"),
-            StatusOverviewItem(title = "增稳 / GPS", value = "设备已休眠"),
+            StatusOverviewItem(title = "Recording Time", value = "--:--"),
+            StatusOverviewItem(title = "Remaining Time", value = "--:--"),
+            StatusOverviewItem(title = "Remaining Capacity", value = "--"),
+            StatusOverviewItem(title = "Battery", value = "--"),
+            StatusOverviewItem(title = "Resolution / FPS", value = "Device Sleeping"),
+            StatusOverviewItem(title = "Stabilization / GPS", value = "Device Sleeping"),
         )
     }
 
     val gpsValue = if (session.gpsAutoPushEnabled) {
         "${session.gpsAutoPushHz}Hz"
     } else {
-        "待机"
+        "Standby"
     }
 
     return listOf(
         StatusOverviewItem(
-            title = "录制时长",
+            title = "Recording Time",
             value = if (camera.recording) formatDuration(camera.recordTimeSeconds.toLong()) else "--:--",
         ),
         StatusOverviewItem(
-            title = "剩余时长",
+            title = "Remaining Time",
             value = formatDuration(camera.remainTimeSeconds),
         ),
         StatusOverviewItem(
-            title = "剩余容量",
+            title = "Remaining Capacity",
             value = "${camera.remainCapacityMb}MB",
         ),
         StatusOverviewItem(
-            title = "电量",
+            title = "Battery",
             value = "${camera.batteryPercent}%",
         ),
         StatusOverviewItem(
-            title = "分辨率 / 帧率",
+            title = "Resolution / FPS",
             value = "${resolutionLabel(camera.videoResolution)} / ${fpsLabel(camera.fpsIndex)}fps",
         ),
         StatusOverviewItem(
-            title = "增稳 / GPS",
+            title = "Stabilization / GPS",
             value = "${eisLabel(camera.eisMode)} / $gpsValue",
         ),
     )
@@ -312,48 +312,48 @@ private fun mapStatusOverviewItems(state: DebugHomeState): List<StatusOverviewIt
 internal fun mapGpsDetailItems(status: SessionStatus): List<StatusOverviewItem> {
     return listOf(
         StatusOverviewItem(
-            title = "定位状态",
+            title = "Location Status",
             value = gpsStatusLabel(status),
         ),
         StatusOverviewItem(
-            title = "定位来源",
+            title = "Location Source",
             value = gpsProviderLabel(status.lastGpsProvider),
         ),
         StatusOverviewItem(
-            title = "海拔",
-            value = status.lastGpsAltitudeMeters?.let { String.format(Locale.US, "%.1fm", it) } ?: "暂无",
+            title = "Altitude",
+            value = status.lastGpsAltitudeMeters?.let { String.format(Locale.US, "%.1fm", it) } ?: "None",
         ),
         StatusOverviewItem(
-            title = "水平精度",
-            value = status.lastGpsAccuracyMeters?.let { String.format(Locale.US, "%.0fm", it) } ?: "暂无",
+            title = "Horizontal Accuracy",
+            value = status.lastGpsAccuracyMeters?.let { String.format(Locale.US, "%.0fm", it) } ?: "None",
         ),
         StatusOverviewItem(
-            title = "速度",
-            value = status.lastGpsSpeedMps?.let { String.format(Locale.US, "%.1fkm/h", it * 3.6f) } ?: "暂无",
+            title = "Speed",
+            value = status.lastGpsSpeedMps?.let { String.format(Locale.US, "%.1fkm/h", it * 3.6f) } ?: "None",
         ),
         StatusOverviewItem(
-            title = "方向角",
-            value = status.lastGpsBearingDegrees?.let { "${normalizeBearingDegrees(it)}°" } ?: "暂无",
+            title = "Bearing",
+            value = status.lastGpsBearingDegrees?.let { "${normalizeBearingDegrees(it)}°" } ?: "None",
         ),
     )
 }
 
 private fun gpsStatusLabel(status: SessionStatus): String {
     return when {
-        status.lastGpsCoordinate == null -> "暂无定位"
-        status.gpsSignalLocked -> "实时定位"
-        else -> "缓存定位"
+        status.lastGpsCoordinate == null -> "No Location"
+        status.gpsSignalLocked -> "Real-time Location"
+        else -> "Cached Location"
     }
 }
 
 private fun gpsProviderLabel(provider: String?): String {
     return when (provider) {
-        null -> "暂无"
+        null -> "None"
         "gps" -> "GPS"
-        "network" -> "网络"
-        "passive" -> "被动"
-        "manual" -> "手动"
-        "manual-fake" -> "模拟"
+        "network" -> "Network"
+        "passive" -> "Passive"
+        "manual" -> "Manual"
+        "manual-fake" -> "Simulate"
         else -> provider
     }
 }
@@ -368,12 +368,12 @@ fun mapWorkbenchConnectionCardUiModel(state: DebugHomeState): WorkbenchConnectio
     val permissionCta = state.permissionCta
     val sleeping = state.sessionStatus.sleeping && state.sessionStatus.connectedDevice != null
     val statusCopy = when (phase) {
-        WorkbenchConnectionPhase.IDLE -> "连接设备"
-        WorkbenchConnectionPhase.SCANNING -> "正在搜索设备"
-        WorkbenchConnectionPhase.CONNECTING -> "正在连接设备"
-        WorkbenchConnectionPhase.PREPARING -> "设备已连接，正在准备控制"
-        WorkbenchConnectionPhase.READY -> if (sleeping) "设备已休眠" else state.sessionStatus.connectedDevice?.name ?: "已连接设备"
-        WorkbenchConnectionPhase.FAILURE -> "连接未完成"
+        WorkbenchConnectionPhase.IDLE -> "Connect Device"
+        WorkbenchConnectionPhase.SCANNING -> "Searching for devices"
+        WorkbenchConnectionPhase.CONNECTING -> "Connecting to device"
+        WorkbenchConnectionPhase.PREPARING -> "Device connected, preparing control"
+        WorkbenchConnectionPhase.READY -> if (sleeping) "Device Sleeping" else state.sessionStatus.connectedDevice?.name ?: "Device Connected"
+        WorkbenchConnectionPhase.FAILURE -> "Connection Incomplete"
     }
     val primaryAction = when {
         permissionCta != null -> WorkbenchConnectionCardPrimaryAction.PERMISSION
@@ -384,22 +384,22 @@ fun mapWorkbenchConnectionCardUiModel(state: DebugHomeState): WorkbenchConnectio
         else -> WorkbenchConnectionCardPrimaryAction.CONNECT
     }
     val primaryActionLabel = when (primaryAction) {
-        WorkbenchConnectionCardPrimaryAction.CONNECT -> "连接"
-        WorkbenchConnectionCardPrimaryAction.VIEW -> "查看"
-        WorkbenchConnectionCardPrimaryAction.PROCESSING -> "处理中"
-        WorkbenchConnectionCardPrimaryAction.READY -> if (sleeping) "已休眠" else "已连接"
-        WorkbenchConnectionCardPrimaryAction.RETRY -> "重试"
-        WorkbenchConnectionCardPrimaryAction.PERMISSION -> permissionCta?.label ?: "授权"
+        WorkbenchConnectionCardPrimaryAction.CONNECT -> "Connect"
+        WorkbenchConnectionCardPrimaryAction.VIEW -> "View"
+        WorkbenchConnectionCardPrimaryAction.PROCESSING -> "Processing"
+        WorkbenchConnectionCardPrimaryAction.READY -> if (sleeping) "Sleeping" else "Connected"
+        WorkbenchConnectionCardPrimaryAction.RETRY -> "Retry"
+        WorkbenchConnectionCardPrimaryAction.PERMISSION -> permissionCta?.label ?: "Authorize"
     }
     val supportingCopy = when {
-        state.permissionCta != null -> "需要蓝牙/定位权限"
-        sleeping -> "设备休眠中，可执行唤醒"
-        phase == WorkbenchConnectionPhase.SCANNING -> "正在查找附近设备"
-        phase == WorkbenchConnectionPhase.CONNECTING -> "正在与设备建立连接"
-        phase == WorkbenchConnectionPhase.PREPARING -> "等待设备确认协议"
-        phase == WorkbenchConnectionPhase.READY -> "蓝牙已连接，控制可用"
+        state.permissionCta != null -> "Requires Bluetooth/Location permissions"
+        sleeping -> "Device is sleeping, can be woken up"
+        phase == WorkbenchConnectionPhase.SCANNING -> "Looking for nearby devices"
+        phase == WorkbenchConnectionPhase.CONNECTING -> "Establishing connection with device"
+        phase == WorkbenchConnectionPhase.PREPARING -> "Waiting for device to confirm protocol"
+        phase == WorkbenchConnectionPhase.READY -> "Bluetooth connected, control available"
         phase == WorkbenchConnectionPhase.FAILURE -> resolveFailureSupportingCopy(state)
-        else -> "通过顶部面板发现并连接设备"
+        else -> "Discover and connect device via top panel"
     }
 
     return WorkbenchConnectionCardUiModel(
@@ -433,13 +433,13 @@ fun mapWorkbenchConnectionSheetUiModel(state: DebugHomeState): WorkbenchConnecti
     }
     val primaryAction = determineSheetPrimaryAction(state, phase, hasCandidate)
     val primaryActionLabel = when (primaryAction) {
-        WorkbenchConnectionPrimaryAction.START_SCAN -> "开始扫描"
-        WorkbenchConnectionPrimaryAction.STOP_SCAN -> "停止扫描"
-        WorkbenchConnectionPrimaryAction.CONNECT_DEVICE -> "连接设备"
-        WorkbenchConnectionPrimaryAction.DISCONNECT -> "断开连接"
-        WorkbenchConnectionPrimaryAction.PROCESSING -> "处理中"
-        WorkbenchConnectionPrimaryAction.RETRY -> "重新扫描"
-        WorkbenchConnectionPrimaryAction.PERMISSION -> state.permissionCta?.label ?: "授权"
+        WorkbenchConnectionPrimaryAction.START_SCAN -> "Start Scan"
+        WorkbenchConnectionPrimaryAction.STOP_SCAN -> "Stop Scan"
+        WorkbenchConnectionPrimaryAction.CONNECT_DEVICE -> "Connect Device"
+        WorkbenchConnectionPrimaryAction.DISCONNECT -> "Disconnect"
+        WorkbenchConnectionPrimaryAction.PROCESSING -> "Processing"
+        WorkbenchConnectionPrimaryAction.RETRY -> "Rescan"
+        WorkbenchConnectionPrimaryAction.PERMISSION -> state.permissionCta?.label ?: "Authorize"
     }
     val selectedDeviceMac = candidateMac ?: connectedMac
     val deviceRows = mapConnectionDeviceRows(
@@ -519,8 +519,8 @@ private fun determineConnectionPhase(state: DebugHomeState): WorkbenchConnection
 }
 
 private fun resolveFailureSupportingCopy(state: DebugHomeState): String {
-    val cause = state.lastUiError ?: state.sessionStatus.latestError ?: "连接未完成"
-    return "$cause · 可重试"
+    val cause = state.lastUiError ?: state.sessionStatus.latestError ?: "Connection Incomplete"
+    return "$cause · Retryable"
 }
 
 private fun mapConnectionBanner(state: DebugHomeState, phase: WorkbenchConnectionPhase): WorkbenchConnectionBannerUiModel? {
@@ -529,39 +529,39 @@ private fun mapConnectionBanner(state: DebugHomeState, phase: WorkbenchConnectio
     val sleeping = state.sessionStatus.sleeping && state.sessionStatus.connectedDevice != null
     return when {
         permissionCta != null -> WorkbenchConnectionBannerUiModel(
-            message = "需要蓝牙/定位权限",
-            actionLabel = "授权",
+            message = "Requires Bluetooth/Location permissions",
+            actionLabel = "Authorize",
             type = WorkbenchConnectionBannerType.PERMISSION,
             permissionAction = permissionCta.action,
         )
         sleeping -> WorkbenchConnectionBannerUiModel(
-            message = "设备已休眠，可执行唤醒",
+            message = "Device has slept, can be woken up",
             actionLabel = null,
             type = WorkbenchConnectionBannerType.SUCCESS,
         )
         phase == WorkbenchConnectionPhase.SCANNING -> WorkbenchConnectionBannerUiModel(
-            message = "正在更新附近设备",
+            message = "Updating nearby devices",
             actionLabel = null,
             type = WorkbenchConnectionBannerType.NEUTRAL,
         )
         phase == WorkbenchConnectionPhase.CONNECTING -> WorkbenchConnectionBannerUiModel(
-            message = "正在与设备建立连接",
+            message = "Establishing connection with device",
             actionLabel = null,
             type = WorkbenchConnectionBannerType.NEUTRAL,
         )
         phase == WorkbenchConnectionPhase.PREPARING -> WorkbenchConnectionBannerUiModel(
-            message = "等待设备确认协议",
+            message = "Waiting for device to confirm protocol",
             actionLabel = null,
             type = WorkbenchConnectionBannerType.NEUTRAL,
         )
         phase == WorkbenchConnectionPhase.READY -> WorkbenchConnectionBannerUiModel(
-            message = "当前设备已可控制",
+            message = "Current device is ready for control",
             actionLabel = null,
             type = WorkbenchConnectionBannerType.SUCCESS,
         )
         phase == WorkbenchConnectionPhase.FAILURE -> WorkbenchConnectionBannerUiModel(
-            message = errorText ?: "连接未完成",
-            actionLabel = "重新扫描",
+            message = errorText ?: "Connection Incomplete",
+            actionLabel = "Rescan",
             type = WorkbenchConnectionBannerType.ERROR,
         )
         else -> null
@@ -609,17 +609,17 @@ private fun mapDeviceStatusLabel(
             (connectedDeviceMac != null && device.macAddress == connectedDeviceMac)
         )
     if (matchesConnected) {
-        if (status.sleeping) return "已休眠"
+        if (status.sleeping) return "Sleeping"
         return when (status.handshakeStage) {
-            HandshakeStage.CAMERA_CONFIRMATION_RECEIVED -> "准备中"
-            HandshakeStage.REQUEST_SENT -> "连接中"
-            else -> if (status.protocolReady) "已连接" else "连接中"
+            HandshakeStage.CAMERA_CONFIRMATION_RECEIVED -> "Preparing"
+            HandshakeStage.REQUEST_SENT -> "Connecting"
+            else -> if (status.protocolReady) "Connected" else "Connecting"
         }
     }
     val matchesSelected = (selectedDeviceId != null && device.deviceId == selectedDeviceId) ||
         (selectedDeviceMac != null && device.macAddress == selectedDeviceMac)
     if (matchesSelected) {
-        return "已选择"
+        return "Selected"
     }
     return null
 }
@@ -628,13 +628,13 @@ private fun localizeRecentEventMessage(message: String): String {
     val normalized = message.trim().removeSuffix(".")
     return when (normalized) {
         "Bluetooth connected",
-        "Connected" -> "设备已连接"
-        "Protocol ready" -> "控制已就绪"
-        "Recording" -> "录制中"
-        "Standby" -> "待命"
-        "Handshake started" -> "开始准备设备"
-        "Fake handshake completed" -> "设备准备完成"
-        "Disconnected" -> "连接已断开"
+        "Connected" -> "Device Connected"
+        "Protocol ready" -> "Control is Ready"
+        "Recording" -> "Recording"
+        "Standby" -> "Standby"
+        "Handshake started" -> "Starting Device Preparation"
+        "Fake handshake completed" -> "Device Preparation Complete"
+        "Disconnected" -> "Connection Disconnected"
         else -> message
     }
 }

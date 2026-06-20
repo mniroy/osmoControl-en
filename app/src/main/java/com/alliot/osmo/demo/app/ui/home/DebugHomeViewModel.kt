@@ -144,7 +144,7 @@ class DebugHomeViewModel internal constructor(
     fun toggleRecording() = launch("Toggling record") { activeController.toggleRecording() }
     fun switchMode(mode: Int) {
         if (_state.value.cameraStatus.recording) {
-            _state.update { it.copy(lastUiError = "录制中，暂不可切换模式") }
+            _state.update { it.copy(lastUiError = "Recording, cannot switch mode right now") }
             return
         }
         launch("Switching mode 0x${mode.toString(16)}") { activeController.switchMode(mode) }

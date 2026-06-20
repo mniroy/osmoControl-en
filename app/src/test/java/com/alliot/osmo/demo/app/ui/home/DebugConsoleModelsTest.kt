@@ -32,7 +32,7 @@ class DebugConsoleModelsTest {
 
         assertFalse(result.isValid)
         assertEquals(null, result.normalizedHex)
-        assertEquals("仅支持十六进制字符和空格", result.errorMessage)
+        assertEquals("Only hexadecimal characters and spaces are supported", result.errorMessage)
     }
 
     @Test
@@ -41,7 +41,7 @@ class DebugConsoleModelsTest {
 
         assertFalse(result.isValid)
         assertEquals(null, result.normalizedHex)
-        assertEquals("HEX 必须按完整字节成对输入", result.errorMessage)
+        assertEquals("HEX must be entered in complete byte pairs", result.errorMessage)
     }
 
     @Test
@@ -83,8 +83,8 @@ class DebugConsoleModelsTest {
             ),
         )
 
-        assertEquals("当前设备未进入 Workbench 兼容列表，仅保留已验证的调试命令。", model.capabilityNotice)
-        assertEquals(listOf("版本查询"), model.coreActions.map(DebugConsoleActionUiModel::label))
+        assertEquals("Current device is not on the Workbench compatibility list, only verified debug commands are available.", model.capabilityNotice)
+        assertEquals(listOf("Query Version"), model.coreActions.map(DebugConsoleActionUiModel::label))
         assertTrue(model.modeActions.isEmpty())
         assertTrue(model.keyActions.isEmpty())
         assertFalse(model.showGpsSection)
@@ -124,7 +124,7 @@ class DebugConsoleModelsTest {
             ),
         )
 
-        assertEquals(listOf("视频", "拍照", "360 全景视频", "360 全景照片"), model.modeActions.map(DebugConsoleActionUiModel::label))
+        assertEquals(listOf("Video", "Photo", "360 Panorama Video", "360 Panorama Photo"), model.modeActions.map(DebugConsoleActionUiModel::label))
         assertTrue(model.showGpsSection)
     }
 
@@ -162,7 +162,7 @@ class DebugConsoleModelsTest {
         )
 
         assertEquals(
-            listOf("慢动作", "视频", "静止延时", "拍照", "运动延时", "夜景", "人物跟随"),
+            listOf("Slow Motion", "Video", "Timelapse", "Photo", "Motionlapse", "Night Mode", "ActiveTrack"),
             model.modeActions.map(DebugConsoleActionUiModel::label),
         )
     }
@@ -220,10 +220,10 @@ class DebugConsoleModelsTest {
             ),
         )
 
-        assertEquals(listOf("按键录制", "按键QS"), awakeModel.keyActions.map(DebugConsoleActionUiModel::label))
+        assertEquals(listOf("Key Record", "QS Key"), awakeModel.keyActions.map(DebugConsoleActionUiModel::label))
         assertTrue(awakeModel.auxiliaryActions.isEmpty())
-        assertEquals(listOf("按键录制", "按键QS"), sleepingModel.keyActions.map(DebugConsoleActionUiModel::label))
-        assertEquals(listOf("唤醒并快拍"), sleepingModel.auxiliaryActions.map(DebugConsoleActionUiModel::label))
+        assertEquals(listOf("Key Record", "QS Key"), sleepingModel.keyActions.map(DebugConsoleActionUiModel::label))
+        assertEquals(listOf("Wake and Snap"), sleepingModel.auxiliaryActions.map(DebugConsoleActionUiModel::label))
     }
 
     @Test
@@ -248,7 +248,7 @@ class DebugConsoleModelsTest {
             ),
         )
 
-        assertTrue(model.coreActions.any { it.actionType == DebugConsoleActionType.TOGGLE_RECORD && it.label == "拍录键" })
+        assertTrue(model.coreActions.any { it.actionType == DebugConsoleActionType.TOGGLE_RECORD && it.label == "Record Key" })
     }
 
     @Test
@@ -273,7 +273,7 @@ class DebugConsoleModelsTest {
             ),
         )
 
-        assertEquals("当前设备未提供预置调试命令，请改用日志和手动报文工具。", model.capabilityNotice)
+        assertEquals("Current device has no preset debug commands, use logs and manual messaging instead.", model.capabilityNotice)
         assertTrue(model.coreActions.isEmpty())
         assertTrue(model.modeActions.isEmpty())
         assertTrue(model.keyActions.isEmpty())
@@ -304,7 +304,7 @@ class DebugConsoleModelsTest {
             ),
         )
 
-        assertEquals(listOf("Workbench 兼容", "受限调试"), rows.map(DebugConsoleDeviceRowUiModel::capabilityLabel))
+        assertEquals(listOf("Workbench Compatible", "Restricted Debug"), rows.map(DebugConsoleDeviceRowUiModel::capabilityLabel))
     }
 
     @Test
@@ -335,7 +335,7 @@ class DebugConsoleModelsTest {
             ),
         )
 
-        assertEquals("仅日志 / 手动", rows.single().capabilityLabel)
+        assertEquals("Log / Manual Only", rows.single().capabilityLabel)
     }
 
     @Test
@@ -358,7 +358,7 @@ class DebugConsoleModelsTest {
         )
 
         assertEquals("Osmo Pocket 3", debugConsoleConnectedDeviceName(state))
-        assertEquals("受限调试", debugConsoleConnectedCapabilityLabel(state))
+        assertEquals("Restricted Debug", debugConsoleConnectedCapabilityLabel(state))
     }
 }
 

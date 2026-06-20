@@ -27,13 +27,13 @@ class HomeStateMappersTest {
 
         val model = mapWorkbenchUiModel(state)
 
-        assertEquals("未连接设备", model.connectionSummary)
+        assertEquals("Device Not Connected", model.connectionSummary)
         assertFalse(model.recordActionEnabled)
-        assertEquals("请先连接设备", model.recordActionDisabledReason)
+        assertEquals("Please connect device first", model.recordActionDisabledReason)
         assertFalse(model.gpsActionEnabled)
-        assertEquals("请先连接设备", model.gpsActionDisabledReason)
+        assertEquals("Please connect device first", model.gpsActionDisabledReason)
         assertFalse(model.modeSwitchEnabled)
-        assertEquals("请先连接设备", model.modeSwitchBlockedReason)
+        assertEquals("Please connect device first", model.modeSwitchBlockedReason)
     }
 
     @Test
@@ -91,11 +91,11 @@ class HomeStateMappersTest {
         val model = mapWorkbenchUiModel(state)
 
         assertFalse(model.recordActionEnabled)
-        assertEquals("当前设备仅支持调试控制", model.recordActionDisabledReason)
+        assertEquals("Current device only supports debug control", model.recordActionDisabledReason)
         assertFalse(model.gpsActionEnabled)
-        assertEquals("当前设备仅支持调试控制", model.gpsActionDisabledReason)
+        assertEquals("Current device only supports debug control", model.gpsActionDisabledReason)
         assertFalse(model.modeSwitchEnabled)
-        assertEquals("当前设备仅支持调试控制", model.modeSwitchBlockedReason)
+        assertEquals("Current device only supports debug control", model.modeSwitchBlockedReason)
     }
 
     @Test
@@ -178,7 +178,7 @@ class HomeStateMappersTest {
 
         assertTrue(model.showModeQuickAction)
         assertEquals(listOf(0x01, 0x05, 0x38, 0x3F), model.modeOptions.map(WorkbenchModeOptionUiModel::mode))
-        assertEquals(listOf("视频", "拍照", "360 全景视频", "360 全景照片"), model.modeOptions.map(WorkbenchModeOptionUiModel::label))
+        assertEquals(listOf("Video", "Photo", "360 Panorama Video", "360 Panorama Photo"), model.modeOptions.map(WorkbenchModeOptionUiModel::label))
     }
 
     @Test
@@ -220,7 +220,7 @@ class HomeStateMappersTest {
             model.modeOptions.map(WorkbenchModeOptionUiModel::mode),
         )
         assertEquals(
-            listOf("慢动作", "视频", "静止延时", "拍照", "运动延时", "夜景", "人物跟随"),
+            listOf("Slow Motion", "Video", "Timelapse", "Photo", "Motionlapse", "Night Mode", "ActiveTrack"),
             model.modeOptions.map(WorkbenchModeOptionUiModel::label),
         )
     }
@@ -373,20 +373,20 @@ class HomeStateMappersTest {
         val cardModel = mapWorkbenchConnectionCardUiModel(state)
         val sheetModel = mapWorkbenchConnectionSheetUiModel(state)
 
-        assertEquals("设备已休眠", model.connectionSummary)
+        assertEquals("Device Sleeping", model.connectionSummary)
         assertFalse(model.recordActionEnabled)
-        assertEquals("设备已休眠", model.recordActionDisabledReason)
+        assertEquals("Device Sleeping", model.recordActionDisabledReason)
         assertFalse(model.gpsActionEnabled)
-        assertEquals("设备已休眠", model.gpsActionDisabledReason)
+        assertEquals("Device Sleeping", model.gpsActionDisabledReason)
         assertFalse(model.modeSwitchEnabled)
-        assertEquals("设备已休眠", model.modeSwitchBlockedReason)
+        assertEquals("Device Sleeping", model.modeSwitchBlockedReason)
         assertFalse(model.deviceActionsUiModel.deviceActionsEnabled)
         assertTrue(model.deviceActionsUiModel.wakeActionsEnabled)
-        assertEquals("设备休眠", primaryActionStatusText(state))
-        assertEquals("设备已休眠", cardModel.statusCopy)
-        assertEquals("设备休眠中，可执行唤醒", cardModel.supportingCopy)
-        assertEquals("已休眠", sheetModel.deviceRows.first().statusLabel)
-        assertEquals("设备已休眠，可执行唤醒", sheetModel.banner?.message)
+        assertEquals("Device Sleeping", primaryActionStatusText(state))
+        assertEquals("Device Sleeping", cardModel.statusCopy)
+        assertEquals("Device is sleeping, can be woken up", cardModel.supportingCopy)
+        assertEquals("Sleeping", sheetModel.deviceRows.first().statusLabel)
+        assertEquals("Device has slept, can be woken up", sheetModel.banner?.message)
     }
 
     @Test
@@ -401,13 +401,13 @@ class HomeStateMappersTest {
 
         val model = mapWorkbenchUiModel(state)
 
-        assertEquals("设备已连接", model.connectionSummary)
+        assertEquals("Device Connected", model.connectionSummary)
         assertFalse(model.recordActionEnabled)
-        assertEquals("设备准备中", model.recordActionDisabledReason)
+        assertEquals("Device Preparing", model.recordActionDisabledReason)
         assertFalse(model.gpsActionEnabled)
-        assertEquals("设备准备中", model.gpsActionDisabledReason)
+        assertEquals("Device Preparing", model.gpsActionDisabledReason)
         assertFalse(model.modeSwitchEnabled)
-        assertEquals("设备准备中", model.modeSwitchBlockedReason)
+        assertEquals("Device Preparing", model.modeSwitchBlockedReason)
     }
 
     @Test
@@ -422,13 +422,13 @@ class HomeStateMappersTest {
 
         val model = mapWorkbenchUiModel(state)
 
-        assertEquals("正在搜索设备", model.connectionSummary)
+        assertEquals("Searching for devices", model.connectionSummary)
         assertFalse(model.recordActionEnabled)
-        assertEquals("正在搜索设备", model.recordActionDisabledReason)
+        assertEquals("Searching for devices", model.recordActionDisabledReason)
         assertFalse(model.gpsActionEnabled)
-        assertEquals("正在搜索设备", model.gpsActionDisabledReason)
+        assertEquals("Searching for devices", model.gpsActionDisabledReason)
         assertFalse(model.modeSwitchEnabled)
-        assertEquals("正在搜索设备", model.modeSwitchBlockedReason)
+        assertEquals("Searching for devices", model.modeSwitchBlockedReason)
     }
 
     @Test
@@ -445,7 +445,7 @@ class HomeStateMappersTest {
         val model = mapWorkbenchUiModel(state)
 
         assertFalse(model.modeSwitchEnabled)
-        assertEquals("录制中", model.modeSwitchBlockedReason)
+        assertEquals("Recording", model.modeSwitchBlockedReason)
     }
 
     @Test
@@ -456,8 +456,8 @@ class HomeStateMappersTest {
         )
 
         assertTrue(isPhotoCaptureMode(snapshot))
-        assertEquals("拍照", primaryActionButtonLabel(snapshot, enabled = true))
-        assertEquals("拍照", primaryActionContentDescription(snapshot))
+        assertEquals("Photo", primaryActionButtonLabel(snapshot, enabled = true))
+        assertEquals("Photo", primaryActionContentDescription(snapshot))
     }
 
     @Test
@@ -468,8 +468,8 @@ class HomeStateMappersTest {
             recording = true,
         )
 
-        assertEquals("拍照中", primaryActionButtonLabel(snapshot, enabled = true))
-        assertEquals("拍照中", primaryActionContentDescription(snapshot))
+        assertEquals("Taking Photo", primaryActionButtonLabel(snapshot, enabled = true))
+        assertEquals("Taking Photo", primaryActionContentDescription(snapshot))
     }
 
     @Test
@@ -481,7 +481,7 @@ class HomeStateMappersTest {
         val model = mapWorkbenchUiModel(state)
 
         assertEquals(
-            listOf("--:--", "--:--", "--", "--", "等待设备状态", "等待设备状态"),
+            listOf("--:--", "--:--", "--", "--", "Waiting for device status", "Waiting for device status"),
             model.statusOverviewItems.map(StatusOverviewItem::value),
         )
     }
@@ -511,7 +511,7 @@ class HomeStateMappersTest {
         val model = mapWorkbenchUiModel(state)
 
         assertEquals(
-            listOf("录制时长", "剩余时长", "剩余容量", "电量", "分辨率 / 帧率", "增稳 / GPS"),
+            listOf("Recording Time", "Remaining Time", "Remaining Capacity", "Battery", "Resolution / FPS", "Stabilization / GPS"),
             model.statusOverviewItems.map(StatusOverviewItem::title),
         )
         assertEquals("01:35", model.statusOverviewItems[0].value)
@@ -534,11 +534,11 @@ class HomeStateMappersTest {
         )
 
         assertEquals(
-            listOf("定位状态", "定位来源", "海拔", "水平精度", "速度", "方向角"),
+            listOf("Location Status", "Location Source", "Altitude", "Horizontal Accuracy", "Speed", "Bearing"),
             items.map(StatusOverviewItem::title),
         )
         assertEquals(
-            listOf("暂无定位", "暂无", "18.5m", "暂无", "45.0km/h", "137°"),
+            listOf("No Location", "None", "18.5m", "None", "45.0km/h", "137°"),
             items.map(StatusOverviewItem::value),
         )
     }
@@ -557,7 +557,7 @@ class HomeStateMappersTest {
         )
 
         assertEquals(PermissionAction.REQUEST, requestCta?.action)
-        assertEquals("开启权限", requestCta?.label)
+        assertEquals("Grant Permission", requestCta?.label)
 
         val settingsCta = mapPermissionCta(
             DebugHomeState(
@@ -571,7 +571,7 @@ class HomeStateMappersTest {
         )
 
         assertEquals(PermissionAction.OPEN_SETTINGS, settingsCta?.action)
-        assertEquals("前往设置", settingsCta?.label)
+        assertEquals("Go to Settings", settingsCta?.label)
     }
 
     @Test
@@ -607,8 +607,8 @@ class HomeStateMappersTest {
         )
 
         assertEquals(3, events.size)
-        assertEquals("录制中", events[0].message)
-        assertEquals("设备已连接", events[1].message)
+        assertEquals("Recording", events[0].message)
+        assertEquals("Device Connected", events[1].message)
         assertEquals("GPS failed", events[2].message)
     }
 
@@ -623,10 +623,10 @@ class HomeStateMappersTest {
             ),
         )
 
-        assertEquals("未连接设备", state.workbenchUiModel.connectionSummary)
+        assertEquals("Device Not Connected", state.workbenchUiModel.connectionSummary)
         assertFalse(state.workbenchUiModel.recordActionEnabled)
         assertEquals(1, state.workbenchUiModel.recentEvents.size)
-        assertEquals("设备已连接", state.workbenchUiModel.recentEvents.first().message)
+        assertEquals("Device Connected", state.workbenchUiModel.recentEvents.first().message)
         assertEquals(PermissionAction.REQUEST, state.permissionCta?.action)
     }
 
@@ -640,9 +640,9 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionPhase.IDLE, model.phase)
-        assertEquals("连接设备", model.statusCopy)
-        assertEquals("连接", model.primaryActionLabel)
-        assertEquals("通过顶部面板发现并连接设备", model.supportingCopy)
+        assertEquals("Connect Device", model.statusCopy)
+        assertEquals("Connect", model.primaryActionLabel)
+        assertEquals("Discover and connect device via top panel", model.supportingCopy)
     }
 
     @Test
@@ -655,9 +655,9 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionPhase.SCANNING, model.phase)
-        assertEquals("正在搜索设备", model.statusCopy)
-        assertEquals("查看", model.primaryActionLabel)
-        assertEquals("正在查找附近设备", model.supportingCopy)
+        assertEquals("Searching for devices", model.statusCopy)
+        assertEquals("View", model.primaryActionLabel)
+        assertEquals("Looking for nearby devices", model.supportingCopy)
     }
 
     @Test
@@ -675,9 +675,9 @@ class HomeStateMappersTest {
         val connectingModel = mapWorkbenchConnectionCardUiModel(connectingState)
 
         assertEquals(WorkbenchConnectionPhase.CONNECTING, connectingModel.phase)
-        assertEquals("正在连接设备", connectingModel.statusCopy)
-        assertEquals("处理中", connectingModel.primaryActionLabel)
-        assertEquals("正在与设备建立连接", connectingModel.supportingCopy)
+        assertEquals("Connecting to device", connectingModel.statusCopy)
+        assertEquals("Processing", connectingModel.primaryActionLabel)
+        assertEquals("Establishing connection with device", connectingModel.supportingCopy)
 
         val preparingState = connectingState.copy(
             sessionStatus = SessionStatus(
@@ -689,9 +689,9 @@ class HomeStateMappersTest {
         val preparingModel = mapWorkbenchConnectionCardUiModel(preparingState)
 
         assertEquals(WorkbenchConnectionPhase.PREPARING, preparingModel.phase)
-        assertEquals("设备已连接，正在准备控制", preparingModel.statusCopy)
-        assertEquals("处理中", preparingModel.primaryActionLabel)
-        assertEquals("等待设备确认协议", preparingModel.supportingCopy)
+        assertEquals("Device connected, preparing control", preparingModel.statusCopy)
+        assertEquals("Processing", preparingModel.primaryActionLabel)
+        assertEquals("Waiting for device to confirm protocol", preparingModel.supportingCopy)
     }
 
     @Test
@@ -711,8 +711,8 @@ class HomeStateMappersTest {
 
         assertEquals(WorkbenchConnectionPhase.READY, model.phase)
         assertEquals("DroneCam", model.statusCopy)
-        assertEquals("已连接", model.primaryActionLabel)
-        assertEquals("蓝牙已连接，控制可用", model.supportingCopy)
+        assertEquals("Connected", model.primaryActionLabel)
+        assertEquals("Bluetooth connected, control available", model.supportingCopy)
     }
 
     @Test
@@ -728,9 +728,9 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionPhase.FAILURE, model.phase)
-        assertEquals("连接未完成", model.statusCopy)
-        assertEquals("重试", model.primaryActionLabel)
-        assertEquals("Connection timed out · 可重试", model.supportingCopy)
+        assertEquals("Connection Incomplete", model.statusCopy)
+        assertEquals("Retry", model.primaryActionLabel)
+        assertEquals("Connection timed out · Retryable", model.supportingCopy)
     }
 
     @Test
@@ -748,7 +748,7 @@ class HomeStateMappersTest {
         )
         val model = mapWorkbenchConnectionCardUiModel(state)
 
-        assertEquals("需要蓝牙/定位权限", model.supportingCopy)
+        assertEquals("Requires Bluetooth/Location permissions", model.supportingCopy)
     }
 
     @Test
@@ -763,7 +763,7 @@ class HomeStateMappersTest {
         )
         val model = mapWorkbenchConnectionCardUiModel(state)
 
-        assertEquals("前往设置", model.primaryActionLabel)
+        assertEquals("Go to Settings", model.primaryActionLabel)
         assertEquals(WorkbenchConnectionCardPrimaryAction.PERMISSION, model.primaryAction)
         assertEquals(PermissionAction.OPEN_SETTINGS, model.permissionAction)
     }
@@ -778,10 +778,10 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionPhase.SCANNING, model.phase)
-        assertEquals("停止扫描", model.primaryActionLabel)
+        assertEquals("Stop Scan", model.primaryActionLabel)
         assertEquals(WorkbenchConnectionPrimaryAction.STOP_SCAN, model.primaryAction)
         assertEquals(WorkbenchConnectionBannerType.NEUTRAL, model.banner?.type)
-        assertEquals("正在更新附近设备", model.banner?.message)
+        assertEquals("Updating nearby devices", model.banner?.message)
     }
 
     @Test
@@ -801,19 +801,19 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionPhase.READY, model.phase)
-        assertEquals("断开连接", model.primaryActionLabel)
+        assertEquals("Disconnect", model.primaryActionLabel)
         assertEquals(WorkbenchConnectionBannerType.SUCCESS, model.banner?.type)
-        assertEquals("当前设备已可控制", model.banner?.message)
+        assertEquals("Current device is ready for control", model.banner?.message)
         assertEquals(1, model.deviceRows.size)
         val row = model.deviceRows.first()
         assertEquals(device.deviceId, row.deviceId)
         assertEquals("ReadyCam", row.name)
         assertEquals(WorkbenchConnectionBannerType.SUCCESS, model.banner?.type)
-        assertEquals("已连接", row.statusLabel)
+        assertEquals("Connected", row.statusLabel)
         assertTrue(row.isSelected)
         assertEquals(device.deviceId, model.selectedDeviceId)
         assertEquals(WorkbenchConnectionPrimaryAction.DISCONNECT, model.primaryAction)
-        assertEquals("断开连接", model.primaryActionLabel)
+        assertEquals("Disconnect", model.primaryActionLabel)
     }
 
     @Test
@@ -829,7 +829,7 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionBannerType.ERROR, model.banner?.type)
-        assertEquals("重新扫描", model.banner?.actionLabel)
+        assertEquals("Rescan", model.banner?.actionLabel)
         assertEquals("BLE error", model.banner?.message)
     }
 
@@ -941,7 +941,7 @@ class HomeStateMappersTest {
 
         val row = model.deviceRows.first()
         assertTrue(row.isSelected)
-        assertEquals("连接中", row.statusLabel)
+        assertEquals("Connecting", row.statusLabel)
         assertEquals(candidate.deviceId, model.selectedDeviceId)
     }
 
@@ -961,9 +961,9 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionPrimaryAction.PROCESSING, model.primaryAction)
-        assertEquals("处理中", model.primaryActionLabel)
+        assertEquals("Processing", model.primaryActionLabel)
         assertEquals(device.deviceId, model.selectedDeviceId)
-        assertEquals("连接中", model.deviceRows.first().statusLabel)
+        assertEquals("Connecting", model.deviceRows.first().statusLabel)
     }
 
     @Test
@@ -982,9 +982,9 @@ class HomeStateMappersTest {
         )
 
         assertEquals(WorkbenchConnectionPrimaryAction.PROCESSING, model.primaryAction)
-        assertEquals("处理中", model.primaryActionLabel)
+        assertEquals("Processing", model.primaryActionLabel)
         assertEquals(device.deviceId, model.selectedDeviceId)
-        assertEquals("准备中", model.deviceRows.first().statusLabel)
+        assertEquals("Preparing", model.deviceRows.first().statusLabel)
     }
 
     @Test
@@ -1004,8 +1004,8 @@ class HomeStateMappersTest {
         val model = mapWorkbenchConnectionSheetUiModel(state)
 
         assertEquals(WorkbenchConnectionBannerType.PERMISSION, model.banner?.type)
-        assertEquals("需要蓝牙/定位权限", model.banner?.message)
-        assertEquals("授权", model.banner?.actionLabel)
+        assertEquals("Requires Bluetooth/Location permissions", model.banner?.message)
+        assertEquals("Authorize", model.banner?.actionLabel)
     }
 
     @Test
@@ -1021,9 +1021,9 @@ class HomeStateMappersTest {
         val model = mapWorkbenchConnectionSheetUiModel(state)
 
         assertEquals(WorkbenchConnectionPrimaryAction.PERMISSION, model.primaryAction)
-        assertEquals("开启权限", model.primaryActionLabel)
-        assertEquals("需要蓝牙/定位权限", model.banner?.message)
-        assertEquals("授权", model.banner?.actionLabel)
+        assertEquals("Grant Permission", model.primaryActionLabel)
+        assertEquals("Requires Bluetooth/Location permissions", model.banner?.message)
+        assertEquals("Authorize", model.banner?.actionLabel)
         assertEquals(PermissionAction.REQUEST, model.banner?.permissionAction)
     }
 
@@ -1038,12 +1038,12 @@ class HomeStateMappersTest {
         )
         val model = mapWorkbenchConnectionSheetUiModel(state)
 
-        assertEquals("连接设备", model.primaryActionLabel)
+        assertEquals("Connect Device", model.primaryActionLabel)
         assertEquals(device.deviceId, model.selectedDeviceId)
         assertEquals(1, model.deviceRows.size)
         val row = model.deviceRows.first()
         assertTrue(row.isSelected)
-        assertEquals("已选择", row.statusLabel)
+        assertEquals("Selected", row.statusLabel)
     }
 
     @Test

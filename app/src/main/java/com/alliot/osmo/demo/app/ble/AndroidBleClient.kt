@@ -56,7 +56,7 @@ class AndroidBleClient(
         BleConnectionState(
             isBluetoothEnabled = adapter?.isEnabled == true,
             isConnected = false,
-            localAdapterAddress = adapter?.address,
+            localAdapterAddress = runCatching { adapter?.address }.getOrNull(),
             supportsWakeAdvertising = supportsWakeAdvertising(),
         ),
     )
@@ -84,7 +84,7 @@ class AndroidBleClient(
     override suspend fun startScan() {
         _connectionState.value = _connectionState.value.copy(
             isBluetoothEnabled = adapter?.isEnabled == true,
-            localAdapterAddress = adapter?.address,
+            localAdapterAddress = runCatching { adapter?.address }.getOrNull(),
             supportsWakeAdvertising = supportsWakeAdvertising(),
         )
         val activeAdapter = adapter
@@ -319,7 +319,7 @@ class AndroidBleClient(
         _connectionState.value = BleConnectionState(
             isBluetoothEnabled = adapter?.isEnabled == true,
             isConnected = false,
-            localAdapterAddress = adapter?.address,
+            localAdapterAddress = runCatching { adapter?.address }.getOrNull(),
             supportsWakeAdvertising = supportsWakeAdvertising(),
         )
         if (connectedAddress != null) {
@@ -373,7 +373,7 @@ class AndroidBleClient(
             isBluetoothEnabled = adapter?.isEnabled == true,
             isConnected = true,
             connectedAddress = address,
-            localAdapterAddress = adapter?.address,
+            localAdapterAddress = runCatching { adapter?.address }.getOrNull(),
             supportsWakeAdvertising = supportsWakeAdvertising(),
         )
         Log.d(TAG, "GATT ready for $address")
@@ -433,7 +433,7 @@ class AndroidBleClient(
                     _connectionState.value = BleConnectionState(
                         isBluetoothEnabled = adapter?.isEnabled == true,
                         isConnected = false,
-                        localAdapterAddress = adapter?.address,
+                        localAdapterAddress = runCatching { adapter?.address }.getOrNull(),
                         supportsWakeAdvertising = supportsWakeAdvertising(),
                     )
                     if (suppressNextDisconnectEvent) {

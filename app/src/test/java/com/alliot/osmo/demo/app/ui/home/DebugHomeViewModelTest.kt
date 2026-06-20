@@ -66,13 +66,13 @@ class DebugHomeViewModelTest {
 
         provider.real.setLogs(listOf(SessionLogEntry(LogCategory.STATE, "Connected", timestampMillis = 1L)))
         val updated = vm.state.first { it.logs.isNotEmpty() }
-        assertEquals("设备已连接", updated.workbenchUiModel.recentEvents.first().message)
+        assertEquals("Device Connected", updated.workbenchUiModel.recentEvents.first().message)
 
         vm.selectDestination(HomeDestination.DEBUG_CONSOLE)
         advanceUntilIdle()
 
         assertEquals(HomeDestination.DEBUG_CONSOLE, vm.state.value.destination)
-        assertEquals("设备已连接", vm.state.value.workbenchUiModel.recentEvents.first().message)
+        assertEquals("Device Connected", vm.state.value.workbenchUiModel.recentEvents.first().message)
     }
 
     @Test

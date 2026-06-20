@@ -7,7 +7,8 @@ WRAPPER_PROPS="$APP_HOME/gradle/wrapper/gradle-wrapper.properties"
 CACHE_DIR="${GRADLE_USER_HOME:-$HOME/.gradle}/wrapper/manual"
 DIST_URL=$(sed -n 's/^distributionUrl=//p' "$WRAPPER_PROPS" | sed 's#\\##g')
 DIST_NAME=$(basename "$DIST_URL" .zip)
-DIST_DIR="$CACHE_DIR/$DIST_NAME"
+EXTRACTED_NAME=$(echo "$DIST_NAME" | sed 's/-bin$//' | sed 's/-all$//')
+DIST_DIR="$CACHE_DIR/$EXTRACTED_NAME"
 GRADLE_BIN="$DIST_DIR/bin/gradle"
 
 if command -v gradle >/dev/null 2>&1; then

@@ -131,12 +131,12 @@ private fun ModeSheet(
     onSwitchMode: (Int) -> Unit,
 ) {
     val modeOptions = state.workbenchUiModel.modeOptions
-    Text("模式切换", style = MaterialTheme.typography.titleLarge)
+    Text("Switch Mode", style = MaterialTheme.typography.titleLarge)
     Text(
         text = state.workbenchUiModel.modeSwitchBlockedReason ?: if (modeOptions.isNotEmpty()) {
-            "当前设备支持 ${modeOptions.size} 种模式。"
+            "Current device supports ${modeOptions.size} modes."
         } else {
-            "当前设备未开放模式切换。"
+            "Current device does not support mode switching."
         },
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -187,12 +187,12 @@ private fun GpsSheet(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("自动同步")
+            Text("Auto Sync")
             Text(
                 text = if (state.sessionStatus.gpsAutoPushEnabled) {
-                    "${state.sessionStatus.gpsAutoPushHz}Hz 持续推送"
+                    "Continuous push at ${state.sessionStatus.gpsAutoPushHz}Hz"
                 } else {
-                    state.workbenchUiModel.gpsActionDisabledReason ?: "已关闭"
+                    state.workbenchUiModel.gpsActionDisabledReason ?: "Closed"
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -205,11 +205,11 @@ private fun GpsSheet(
         )
     }
     SummaryPill(
-        title = "最新坐标",
-        value = state.sessionStatus.lastGpsCoordinate ?: "暂无定位",
+        title = "Latest Coordinates",
+        value = state.sessionStatus.lastGpsCoordinate ?: "No Location",
     )
     Text(
-        text = state.sessionStatus.lastGpsResult ?: "等待首次定位",
+        text = state.sessionStatus.lastGpsResult ?: "Waiting for first location",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -239,14 +239,14 @@ private fun GpsSheet(
             onClick = { if (gpsControlsEnabled) onSetGpsAutoPushFrequencyHz(10) },
             enabled = gpsControlsEnabled,
         ) {
-            Text("同步 10Hz")
+            Text("Sync 10Hz")
         }
         HomeOutlinedButton(
             modifier = Modifier.weight(1f),
             onClick = { if (gpsControlsEnabled) onSetGpsLocationRequestFrequencyHz(1) },
             enabled = gpsControlsEnabled,
         ) {
-            Text("定位 1Hz")
+            Text("Location 1Hz")
         }
     }
     HomeFilledButton(
@@ -254,7 +254,7 @@ private fun GpsSheet(
         onClick = onPushSampleGps,
         enabled = gpsControlsEnabled,
     ) {
-        Text("推送示例 GPS")
+        Text("Push Mock GPS")
     }
     val permissionCta = state.permissionCta
     if (permissionCta != null) {
@@ -277,9 +277,9 @@ private fun DeviceActionsSheet(
     onSendQsKeyClick: () -> Unit,
     onSendSnapshotKeyClick: () -> Unit,
 ) {
-    Text("设备动作", style = MaterialTheme.typography.titleLarge)
+    Text("Device Actions", style = MaterialTheme.typography.titleLarge)
     Text(
-        text = "把低频或高风险操作收进次级面板，避免与主录制按钮相邻。",
+        text = "Low frequency or high risk operations are grouped in sub-panels to avoid being adjacent to the main record button.",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -292,7 +292,7 @@ private fun DeviceActionsSheet(
                     onClick = onSleep,
                     kind = HomeHapticKind.DANGER,
                     enabled = model.deviceActionsEnabled,
-                ) { Text("休眠") }
+                ) { Text("Sleep") }
             }
         }
         if (model.showWakeAction) {
@@ -301,7 +301,7 @@ private fun DeviceActionsSheet(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onWake,
                     enabled = model.wakeActionsEnabled,
-                ) { Text("唤醒") }
+                ) { Text("Wake") }
             }
         }
         if (model.showVersionAction) {
@@ -310,7 +310,7 @@ private fun DeviceActionsSheet(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onRequestVersion,
                     enabled = model.deviceActionsEnabled,
-                ) { Text("版本") }
+                ) { Text("Version") }
             }
         }
         if (model.showWakeAndSnapshotAction) {
@@ -319,7 +319,7 @@ private fun DeviceActionsSheet(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onWakeAndSnapshot,
                     enabled = model.wakeActionsEnabled,
-                ) { Text("唤醒并快拍") }
+                ) { Text("Wake and Snap") }
             }
         }
         if (model.showQsAction) {
@@ -337,13 +337,13 @@ private fun DeviceActionsSheet(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onSendSnapshotKeyClick,
                     enabled = model.deviceActionsEnabled,
-                ) { Text("休眠快拍") }
+                ) { Text("Sleep Quick Snapshot") }
             }
         }
     }
     if (visibleActions.isEmpty()) {
         Text(
-            text = "当前设备未开放 Workbench 设备动作。",
+            text = "Current device does not support Workbench actions.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -388,7 +388,7 @@ private fun ConnectionSheet(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("连接设备", style = MaterialTheme.typography.titleLarge)
+                Text("Connect Device", style = MaterialTheme.typography.titleLarge)
                 Text(
                     text = connectionSheetSubtitle(model.phase),
                     style = MaterialTheme.typography.bodySmall,
@@ -396,7 +396,7 @@ private fun ConnectionSheet(
                 )
             }
             IconButton(onClick = onDismiss) {
-                Icon(Icons.Default.Close, contentDescription = "关闭")
+                Icon(Icons.Default.Close, contentDescription = "Close")
             }
         }
         model.banner?.let { banner ->
@@ -410,14 +410,14 @@ private fun ConnectionSheet(
             modifier = Modifier.fillMaxWidth(),
             value = model.filterQuery,
             onValueChange = onDeviceFilterQueryChange,
-            label = { Text("筛选设备") },
-            placeholder = { Text("按名称或 MAC 搜索") },
+            label = { Text("Filter Devices") },
+            placeholder = { Text("Search by Name or MAC") },
             singleLine = true,
             supportingText = {
                 val copy = if (model.filterQuery.isBlank()) {
-                    "已发现 ${model.totalDeviceCount} 台设备"
+                    "Found ${model.totalDeviceCount} devices"
                 } else {
-                    "匹配 ${model.filteredDeviceCount} / ${model.totalDeviceCount}"
+                    "Matched ${model.filteredDeviceCount} / ${model.totalDeviceCount}"
                 }
                 Text(copy)
             },
@@ -439,15 +439,15 @@ private fun ConnectionSheet(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = "完成蓝牙/定位授权后即可扫描设备。",
+                    text = "Scanning will start after Bluetooth/Location permissions are granted.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             showFilteredEmptyState -> ConnectionSheetEmptyState(
-                title = "没有匹配的设备",
-                detail = "调整筛选词，或继续扫描等待更多设备出现",
-                hint = "支持按设备名和 MAC 地址匹配",
+                title = "No matching devices",
+                detail = "Adjust filter terms, or keep scanning to find more devices",
+                hint = "Supports matching by device name and MAC address",
             )
             showEmptyState -> ConnectionSheetEmptyState()
             else -> LazyColumn(
@@ -497,7 +497,7 @@ private fun ConnectionSheet(
             },
             kind = HomeHapticKind.NAVIGATION,
         ) {
-            Text("前往调试台")
+            Text("Go to Debug Console")
         }
     }
 }
@@ -505,9 +505,9 @@ private fun ConnectionSheet(
 @Composable
 private fun ConnectionSheetEmptyState() {
     ConnectionSheetEmptyState(
-        title = "暂未发现设备",
-        detail = "确认设备已开机并靠近手机",
-        hint = "使用底部操作重新扫描",
+        title = "No devices found yet",
+        detail = "Make sure the device is turned on and close to the phone",
+        hint = "Use the action below to rescan",
     )
 }
 
@@ -587,7 +587,7 @@ private fun ConnectionDeviceRow(
                 }
             }
             Text(
-                text = "尾号 ${row.macSuffix}",
+                text = "Suffix ${row.macSuffix}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -649,11 +649,11 @@ private fun ConnectionBanner(
 
 private fun connectionSheetSubtitle(phase: WorkbenchConnectionPhase): String {
     return when (phase) {
-        WorkbenchConnectionPhase.IDLE -> "选择附近设备开始连接"
-        WorkbenchConnectionPhase.SCANNING -> "正在更新附近设备"
-        WorkbenchConnectionPhase.CONNECTING -> "正在与设备建立连接"
-        WorkbenchConnectionPhase.PREPARING -> "设备已连接，正在完成准备"
-        WorkbenchConnectionPhase.READY -> "当前设备已可控制"
-        WorkbenchConnectionPhase.FAILURE -> "连接未完成"
+        WorkbenchConnectionPhase.IDLE -> "Select a nearby device to start connecting"
+        WorkbenchConnectionPhase.SCANNING -> "Updating nearby devices"
+        WorkbenchConnectionPhase.CONNECTING -> "Establishing connection with device"
+        WorkbenchConnectionPhase.PREPARING -> "Device connected, completing preparation"
+        WorkbenchConnectionPhase.READY -> "Current device is ready for control"
+        WorkbenchConnectionPhase.FAILURE -> "Connection Incomplete"
     }
 }

@@ -29,5 +29,5 @@ internal fun eisLabel(mode: Int): String = when (mode) {
     1 -> "RockSteady"
     2 -> "HorizonBalancing"
     3 -> "HorizonSteady"
-    else -> "标准"
+    else -> "Standard"
 }

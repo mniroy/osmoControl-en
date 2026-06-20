@@ -134,7 +134,7 @@ fun HomeShell(
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_settings),
-                                contentDescription = "打开设置",
+                                contentDescription = "Open Settings",
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
@@ -249,7 +249,7 @@ private fun SettingsPanel(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        HomeSectionCard(title = "设置") {
+        HomeSectionCard(title = "Settings") {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -260,12 +260,12 @@ private fun SettingsPanel(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Text(
-                        text = "明暗模式",
+                        text = "Dark/Light Mode",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                     )
                     Text(
-                        text = if (darkThemeEnabled) "当前为深色界面。" else "当前为浅色界面。",
+                        text = if (darkThemeEnabled) "Currently dark theme." else "Currently light theme.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -277,9 +277,9 @@ private fun SettingsPanel(
             }
         }
 
-        HomeSectionCard(title = "应用状态") {
+        HomeSectionCard(title = "App State") {
             Text(
-                text = "重置会清空主题偏好、控制器身份、已配对相机记录和权限请求记录，并重新创建应用会话。",
+                text = "Resetting will clear theme preferences, controller identity, paired camera records and permission request records, and recreate the app session.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -288,13 +288,13 @@ private fun SettingsPanel(
                 onClick = onResetAppState,
                 kind = HomeHapticKind.DANGER,
             ) {
-                Text("重置 APP 状态")
+                Text("Reset APP State")
             }
         }
 
-        HomeSectionCard(title = "关于") {
+        HomeSectionCard(title = "About") {
             Text(
-                text = "版本 $versionLabel",
+                text = "Version $versionLabel",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -303,7 +303,7 @@ private fun SettingsPanel(
                 onClick = onOpenAbout,
                 kind = HomeHapticKind.SECONDARY,
             ) {
-                Text("查看关于页面")
+                Text("View About Page")
             }
         }
     }
@@ -318,20 +318,20 @@ private fun AboutDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("关于 Osmo Workbench")
+            Text("About Osmo Workbench")
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 SummaryPill(
-                    title = "作者",
+                    title = "Author",
                     value = "Alliot",
                 )
                 SummaryPill(
-                    title = "博客",
+                    title = "Blog",
                     value = "www.iots.vip",
                 )
                 SummaryPill(
-                    title = "版本",
+                    title = "Version",
                     value = versionLabel,
                 )
             }
@@ -340,12 +340,12 @@ private fun AboutDialog(
             TextButton(
                 onClick = { uriHandler.openUri("https://www.iots.vip") },
             ) {
-                Text("访问博客")
+                Text("Visit Blog")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("关闭")
+                Text("Close")
             }
         },
     )

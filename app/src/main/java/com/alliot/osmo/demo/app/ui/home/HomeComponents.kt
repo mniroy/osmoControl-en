@@ -56,7 +56,7 @@ fun HomeDestinationToggle(
                 ),
                 shape = SegmentedButtonDefaults.itemShape(index = index, count = destinations.size),
             ) {
-                Text(if (item == HomeDestination.WORKBENCH) "工作台" else "调试台")
+                Text(if (item == HomeDestination.WORKBENCH) "Workbench" else "Debug Console")
             }
         }
     }

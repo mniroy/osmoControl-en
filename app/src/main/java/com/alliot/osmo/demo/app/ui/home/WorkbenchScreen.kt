@@ -126,7 +126,7 @@ private fun PrimaryActionCard(
             append(" / ")
             append("${fpsLabel(snapshot.fpsIndex)}fps")
             append(" / ")
-            append(if (state.sessionStatus.gpsPushActive) "GPS同步" else "GPS待机")
+            append(if (state.sessionStatus.gpsPushActive) "GPS Sync" else "GPS Standby")
         }
     }
     val buttonLabel = primaryActionButtonLabel(snapshot, workbench.recordActionEnabled)
@@ -289,7 +289,7 @@ private fun QuickActionRow(
         return
     }
     val session = state.sessionStatus
-    val modeName = state.cameraStatus.modeName.ifBlank { state.cameraStatus.modeLabel.ifBlank { "当前模式" } }
+    val modeName = state.cameraStatus.modeName.ifBlank { state.cameraStatus.modeLabel.ifBlank { "Current Mode" } }
     val gpsAccent = when {
         session.gpsAutoPushEnabled -> SignalReady
         state.permissionCta != null -> MaterialTheme.colorScheme.error
@@ -308,13 +308,13 @@ private fun QuickActionRow(
                 modifier = Modifier.weight(1f),
                 accent = MaterialTheme.colorScheme.primary,
                 kind = QuickActionKind.MODE,
-                title = "模式",
+                title = "Mode",
                 status = when {
-                    !workbench.modeSwitchEnabled -> "锁定"
+                    !workbench.modeSwitchEnabled -> "Locked"
                     else -> modeName
                 },
-                subtitle = workbench.modeSwitchBlockedReason ?: "${workbench.modeOptions.size} 种模式可切换",
-                actionLabel = "切换",
+                subtitle = workbench.modeSwitchBlockedReason ?: "${workbench.modeOptions.size} modes available",
+                actionLabel = "Switch",
                 enabled = true,
                 onClick = onOpenModeSheet,
             )
@@ -328,16 +328,16 @@ private fun QuickActionRow(
                 status = if (session.gpsAutoPushEnabled) {
                     "${session.gpsAutoPushHz}Hz"
                 } else if (state.permissionCta != null) {
-                    "待授权"
+                    "Pending Authorization"
                 } else {
-                    "待机"
+                    "Standby"
                 },
                 subtitle = if (session.gpsAutoPushEnabled) {
-                    session.lastGpsCoordinate ?: (session.lastGpsResult ?: "自动同步进行中")
+                    session.lastGpsCoordinate ?: (session.lastGpsResult ?: "Auto Syncing")
                 } else {
-                    workbench.gpsActionDisabledReason ?: "自动同步已关闭"
+                    workbench.gpsActionDisabledReason ?: "Auto Sync Disabled"
                 },
-                actionLabel = "配置",
+                actionLabel = "Configure",
                 enabled = true,
                 onClick = onOpenGpsSheet,
             )
@@ -347,19 +347,19 @@ private fun QuickActionRow(
                 modifier = Modifier.weight(1f),
                 accent = if (state.busyAction != null) SignalDanger else SignalWarn,
                 kind = QuickActionKind.DEVICE,
-                title = "设备动作",
+                title = "Device Actions",
                 status = when {
-                    state.busyAction != null -> "处理中"
-                    controlReady -> "就绪"
-                    session.connectedDevice != null -> "已连接"
-                    else -> "离线"
+                    state.busyAction != null -> "Processing"
+                    controlReady -> "Ready"
+                    session.connectedDevice != null -> "Connected"
+                    else -> "Offline"
                 },
                 subtitle = state.busyAction ?: if (controlReady) {
-                    "休眠 / 唤醒 / 版本"
+                    "Sleep / Wake / Version"
                 } else {
-                    "连接设备后开放"
+                    "Available after device connected"
                 },
-                actionLabel = "打开",
+                actionLabel = "Open",
                 enabled = true,
                 onClick = onOpenDeviceActionsSheet,
             )
@@ -594,7 +594,7 @@ private fun RowScope.ChevronBar(
 
 @Composable
 private fun StatusOverviewCard(state: DebugHomeState) {
-    HomeSectionCard(title = "状态总览") {
+    HomeSectionCard(title = "Status Overview") {
         state.workbenchUiModel.statusOverviewItems.chunked(2).forEach { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -625,7 +625,7 @@ private fun RecentEventsCard(
         onClick = onOpenRecentEvents,
     )
     HomeSectionCard(
-        title = "最近事件",
+        title = "Recent Events",
         modifier = Modifier.clickable(
             enabled = state.workbenchUiModel.recentEvents.isNotEmpty(),
             onClick = onCardClick,
@@ -633,7 +633,7 @@ private fun RecentEventsCard(
     ) {
         if (state.workbenchUiModel.recentEvents.isEmpty()) {
             Text(
-                text = "等待设备状态或错误事件。",
+                text = "Waiting for device status or error events.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -653,7 +653,7 @@ private fun RecentEventsCard(
                 Spacer(modifier = Modifier.height(2.dp))
             }
             Text(
-                text = "点击进入调试台日志",
+                text = "Click to view debug console log",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

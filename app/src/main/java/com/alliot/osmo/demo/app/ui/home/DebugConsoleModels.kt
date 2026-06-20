@@ -65,19 +65,19 @@ fun validateManualHexInput(input: String): ManualHexValidation {
     if (compact.isEmpty()) {
         return ManualHexValidation(
             normalizedHex = null,
-            errorMessage = "请输入 HEX 指令",
+            errorMessage = "Please enter HEX command",
         )
     }
     if (!compact.all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }) {
         return ManualHexValidation(
             normalizedHex = null,
-            errorMessage = "仅支持十六进制字符和空格",
+            errorMessage = "Only hexadecimal characters and spaces are supported",
         )
     }
     if (compact.length % 2 != 0) {
         return ManualHexValidation(
             normalizedHex = null,
-            errorMessage = "HEX 必须按完整字节成对输入",
+            errorMessage = "HEX must be entered in complete byte pairs",
         )
     }
     return ManualHexValidation(
@@ -119,7 +119,7 @@ fun mapDebugConsoleUiModel(state: DebugHomeState): DebugConsoleUiModel {
 
     if (!presetCommandsAvailable) {
         return DebugConsoleUiModel(
-            capabilityNotice = "当前设备未提供预置调试命令，请改用日志和手动报文工具。",
+            capabilityNotice = "Current device has no preset debug commands, use logs and manual messaging instead.",
             coreActions = emptyList(),
             modeActions = emptyList(),
             auxiliaryActions = emptyList(),
@@ -130,12 +130,12 @@ fun mapDebugConsoleUiModel(state: DebugHomeState): DebugConsoleUiModel {
     }
 
     val coreActions = buildList {
-        addIfSupported(DebugConsoleActionType.VERSION_QUERY, "版本查询", capabilities, DeviceCapabilities::supportsVersionQuery, baseControlEnabled)
-        addIfSupported(DebugConsoleActionType.REBOOT, "重启相机", capabilities, DeviceCapabilities::supportsReboot, baseControlEnabled)
-        addIfSupported(DebugConsoleActionType.TOGGLE_RECORD, "拍录键", capabilities, DeviceCapabilities::supportsDirectRecord, baseControlEnabled)
-        addIfSupported(DebugConsoleActionType.SUBSCRIBE_STATUS, "订阅状态", capabilities, DeviceCapabilities::supportsStateSubscribe, baseControlEnabled)
-        addIfSupported(DebugConsoleActionType.SLEEP, "休眠", capabilities, DeviceCapabilities::supportsSleep, baseControlEnabled)
-        addIfSupported(DebugConsoleActionType.WAKE, "唤醒", capabilities, DeviceCapabilities::supportsWake, wakeEnabled)
+        addIfSupported(DebugConsoleActionType.VERSION_QUERY, "Query Version", capabilities, DeviceCapabilities::supportsVersionQuery, baseControlEnabled)
+        addIfSupported(DebugConsoleActionType.REBOOT, "Reboot Camera", capabilities, DeviceCapabilities::supportsReboot, baseControlEnabled)
+        addIfSupported(DebugConsoleActionType.TOGGLE_RECORD, "Record Key", capabilities, DeviceCapabilities::supportsDirectRecord, baseControlEnabled)
+        addIfSupported(DebugConsoleActionType.SUBSCRIBE_STATUS, "Subscribe Status", capabilities, DeviceCapabilities::supportsStateSubscribe, baseControlEnabled)
+        addIfSupported(DebugConsoleActionType.SLEEP, "Sleep", capabilities, DeviceCapabilities::supportsSleep, baseControlEnabled)
+        addIfSupported(DebugConsoleActionType.WAKE, "Wake", capabilities, DeviceCapabilities::supportsWake, wakeEnabled)
     }
     val modeActions = buildList {
         if (capabilities == null || capabilities.supportsModeSwitch) {
@@ -157,20 +157,20 @@ fun mapDebugConsoleUiModel(state: DebugHomeState): DebugConsoleUiModel {
             add(
                 DebugConsoleActionUiModel(
                     actionType = DebugConsoleActionType.WAKE_AND_SNAPSHOT,
-                    label = "唤醒并快拍",
+                    label = "Wake and Snap",
                     enabled = wakeEnabled,
                 ),
             )
         }
     }
     val keyActions = buildList {
-        addIfSupported(DebugConsoleActionType.RECORD_KEY, "按键录制", capabilities, DeviceCapabilities::supportsRecordKey, baseControlEnabled)
-        addIfSupported(DebugConsoleActionType.QS_KEY, "按键QS", capabilities, DeviceCapabilities::supportsQsKey, baseControlEnabled)
+        addIfSupported(DebugConsoleActionType.RECORD_KEY, "Key Record", capabilities, DeviceCapabilities::supportsRecordKey, baseControlEnabled)
+        addIfSupported(DebugConsoleActionType.QS_KEY, "QS Key", capabilities, DeviceCapabilities::supportsQsKey, baseControlEnabled)
     }
     val showGpsSection = capabilities?.supportsGpsPush ?: true
     val capabilityNotice = when {
         capabilities == null -> null
-        !capabilities.supportsWorkbench -> "当前设备未进入 Workbench 兼容列表，仅保留已验证的调试命令。"
+        !capabilities.supportsWorkbench -> "Current device is not on the Workbench compatibility list, only verified debug commands are available."
         else -> null
     }
 
@@ -207,11 +207,11 @@ fun mapDebugConsoleDeviceRows(state: DebugHomeState): List<DebugConsoleDeviceRow
 fun debugConsoleConnectedDeviceName(state: DebugHomeState): String {
     return state.sessionStatus.connectedProfile?.displayName
         ?: state.sessionStatus.connectedDevice?.name
-        ?: "无"
+        ?: "None"
 }
 
 fun debugConsoleConnectedCapabilityLabel(state: DebugHomeState): String {
-    val capabilities = state.sessionStatus.connectedProfile?.capabilities ?: return "未识别"
+    val capabilities = state.sessionStatus.connectedProfile?.capabilities ?: return "Unrecognized"
     return capabilityLabelFor(capabilities)
 }
 
@@ -226,17 +226,17 @@ private fun canWakeFromDebugConsole(state: DebugHomeState): Boolean {
 
 private fun capabilityLabelFor(capabilities: DeviceCapabilities): String {
     return when {
-        capabilities.supportsWorkbench -> "Workbench 兼容"
-        capabilities.supportsDebugConsole -> "受限调试"
-        else -> "仅日志 / 手动"
+        capabilities.supportsWorkbench -> "Workbench Compatible"
+        capabilities.supportsDebugConsole -> "Restricted Debug"
+        else -> "Log / Manual Only"
     }
 }
 
 private fun capabilityLabelFor(device: SessionDevice): String {
     return when {
-        device.workbenchSupported -> "Workbench 兼容"
-        device.inferredProtocolFamily != ProtocolFamily.UNKNOWN -> "受限调试"
-        else -> "仅日志 / 手动"
+        device.workbenchSupported -> "Workbench Compatible"
+        device.inferredProtocolFamily != ProtocolFamily.UNKNOWN -> "Restricted Debug"
+        else -> "Log / Manual Only"
     }
 }
 
