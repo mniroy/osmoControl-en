@@ -10,14 +10,15 @@ class ComposeConventionPlugin : Plugin<Project> {
         val applicationExtension = target.extensions.findByType(ApplicationExtension::class.java)
         val libraryExtension = target.extensions.findByType(LibraryExtension::class.java)
 
+        // Apply the Kotlin Compose plugin (bundled in Kotlin 2.0+)
+        target.pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+
         when {
             applicationExtension != null -> {
                 applicationExtension.buildFeatures.compose = true
-                applicationExtension.composeOptions.kotlinCompilerExtensionVersion = "1.5.15"
             }
             libraryExtension != null -> {
                 libraryExtension.buildFeatures.compose = true
-                libraryExtension.composeOptions.kotlinCompilerExtensionVersion = "1.5.15"
             }
             else -> error("Compose convention requires an Android module.")
         }
@@ -32,3 +33,4 @@ class ComposeConventionPlugin : Plugin<Project> {
         }
     }
 }
+

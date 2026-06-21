@@ -4,10 +4,10 @@ plugins {
 }
 
 android {
-    namespace = "com.alliot.osmo.demo.app"
+    namespace = "com.mniroy.osmo.demo.app"
 
     defaultConfig {
-        applicationId = "com.alliot.osmo.demo"
+        applicationId = "com.mniroy.osmo.demo"
         versionCode = 1
         versionName = "0.1.0"
     }
@@ -49,6 +49,13 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.coroutines.android)
+
+    // Wear Compose
+    implementation(libs.wear.compose.material)
+    implementation(libs.wear.compose.foundation)
+    implementation(libs.wear.compose.navigation)
+    implementation(libs.wear.core)
+
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
 }

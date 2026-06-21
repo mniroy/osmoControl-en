@@ -9,7 +9,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             pluginManager.apply("java-library")
             pluginManager.apply("org.jetbrains.kotlin.jvm")
             extensions.configure<JavaPluginExtension> {
-                toolchain.languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
+                toolchain.languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(25))
             }
         }
     }

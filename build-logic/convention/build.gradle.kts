@@ -4,13 +4,13 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
 dependencies {
-    compileOnly("com.android.tools.build:gradle:8.7.3")
-    compileOnly(kotlin("gradle-plugin", version = "1.9.25"))
+    compileOnly("com.android.tools.build:gradle:8.8.0")
+    compileOnly(kotlin("gradle-plugin", version = "2.1.20"))
 }
 
 gradlePlugin {
