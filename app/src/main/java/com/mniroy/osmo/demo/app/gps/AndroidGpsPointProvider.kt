@@ -103,6 +103,7 @@ class AndroidGpsPointProvider(
             horizontalAccuracyMeters = accuracy,
             provider = provider,
             fixTimeMillis = time,
+            satelliteCount = extras?.getInt("satellites")
         )
     }
 

@@ -159,8 +159,10 @@ fun ShutterScreen(
                 )
                 
                 if (session.gpsSignalLocked) {
+                    val satCount = session.gpsSatelliteCount
+                    val text = if (satCount != null && satCount > 0) "GPS: $satCount" else "GPS"
                     Text(
-                        text = "GPS",
+                        text = text,
                         color = LimeAccent,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold

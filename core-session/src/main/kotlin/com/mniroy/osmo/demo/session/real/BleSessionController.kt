@@ -585,23 +585,12 @@ class BleSessionController(
         val currentPoint = gpsPointProvider?.invoke()
         if (currentPoint != null) lastGpsPoint = currentPoint
         val point = lastGpsPoint
-        if (point == null) {
-            _status.value = _status.value.copy(
-                gpsPushActive = false,
-                gpsSignalLocked = false,
-                lastGpsResult = "Skipped ($source, no usable location fix)",
-                latestError = "No usable GPS fix available on the phone",
-            )
-            return
-        }
         val signalLocked = currentPoint != null
-        val coordinateText = "${"%.6f".format(point.latitude)}, ${"%.6f".format(point.longitude)}"
         val sentAtMs = System.currentTimeMillis()
         val nowUtc = OffsetDateTime.now(java.time.ZoneOffset.UTC)
-        val (speedNorthCmps, speedEastCmps) = gpsSpeedComponents(point)
-        sendProtocol(
-            CommandIds.CMD_SET_COMMON,
-            CommandIds.GPS_PUSH,
+
+        val payload = if (point != null) {
+            val (speedNorthCmps, speedEastCmps) = gpsSpeedComponents(point)
             GpsDataPayload(
                 yearMonthDay = nowUtc.year * 10_000 + nowUtc.monthValue * 100 + nowUtc.dayOfMonth,
                 hourMinuteSecond = (nowUtc.hour + 8) * 10_000 + nowUtc.minute * 100 + nowUtc.second,
@@ -614,28 +603,70 @@ class BleSessionController(
                 verticalAccuracyMm = 800,
                 horizontalAccuracyMm = 600,
                 speedAccuracyCmps = 40,
-                satelliteCount = 12,
-            ),
+                satelliteCount = point.satelliteCount?.toLong() ?: 12,
+            )
+        } else {
+            GpsDataPayload(
+                yearMonthDay = nowUtc.year * 10_000 + nowUtc.monthValue * 100 + nowUtc.dayOfMonth,
+                hourMinuteSecond = (nowUtc.hour + 8) * 10_000 + nowUtc.minute * 100 + nowUtc.second,
+                longitudeE7 = 0,
+                latitudeE7 = 0,
+                heightMm = 0,
+                speedNorthCmps = 0f,
+                speedEastCmps = 0f,
+                speedDownCmps = 0f,
+                verticalAccuracyMm = 0,
+                horizontalAccuracyMm = 0,
+                speedAccuracyCmps = 0,
+                satelliteCount = 0,
+            )
+        }
+
+        sendProtocol(
+            CommandIds.CMD_SET_COMMON,
+            CommandIds.GPS_PUSH,
+            payload,
             cmdType = CMD_NO_RESPONSE,
         )
-        _status.value = _status.value.copy(
-            gpsPushActive = true,
-            gpsSignalLocked = signalLocked,
-            lastGpsCoordinate = coordinateText,
-            lastGpsAltitudeMeters = point.altitudeMeters,
-            lastGpsSpeedMps = point.speedMps,
-            lastGpsBearingDegrees = point.bearingDegrees,
-            lastGpsAccuracyMeters = point.horizontalAccuracyMeters,
-            lastGpsProvider = point.provider,
-            lastGpsSource = source,
-            lastGpsSentAtMs = sentAtMs,
-            lastGpsResult = if (signalLocked) {
-                "Sent ($source, live phone fix)"
-            } else {
-                "Sent ($source, cached phone fix)"
-            },
-            latestError = null,
-        )
+
+        if (point != null) {
+            val coordinateText = "${"%.6f".format(point.latitude)}, ${"%.6f".format(point.longitude)}"
+            _status.value = _status.value.copy(
+                gpsPushActive = true,
+                gpsSignalLocked = signalLocked,
+                gpsSatelliteCount = point.satelliteCount,
+                lastGpsCoordinate = coordinateText,
+                lastGpsAltitudeMeters = point.altitudeMeters,
+                lastGpsSpeedMps = point.speedMps,
+                lastGpsBearingDegrees = point.bearingDegrees,
+                lastGpsAccuracyMeters = point.horizontalAccuracyMeters,
+                lastGpsProvider = point.provider,
+                lastGpsSource = source,
+                lastGpsSentAtMs = sentAtMs,
+                lastGpsResult = if (signalLocked) {
+                    "Sent ($source, live phone fix)"
+                } else {
+                    "Sent ($source, cached phone fix)"
+                },
+                latestError = null,
+            )
+        } else {
+            _status.value = _status.value.copy(
+                gpsPushActive = true,
+                gpsSignalLocked = false,
+                gpsSatelliteCount = 0,
+                lastGpsCoordinate = "No Fix",
+                lastGpsAltitudeMeters = 0.0,
+                lastGpsSpeedMps = 0f,
+                lastGpsBearingDegrees = 0f,
+                lastGpsAccuracyMeters = 0f,
+                lastGpsProvider = "dummy",
+                lastGpsSource = source,
+                lastGpsSentAtMs = sentAtMs,
+                lastGpsResult = "Sent ($source, no-fix dummy)",
+                latestError = "Waiting for GPS fix",
+            )
+        }
     }
 
     private fun normalizeGpsFrequency(hz: Int): Int {

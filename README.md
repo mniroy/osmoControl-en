@@ -4,9 +4,9 @@
 
 ## UI Preview
 
-| Workbench | Mode Switch | Debug Console |
+| Main Shutter | Sleep/Wake | Settings |
 | --- | --- | --- |
-| ![Workbench Interface](./screenshot/workspace.png) | ![Mode Switch Interface](./screenshot/mothod-switch.png) | ![Debug Console Interface](./screenshot/debug.png) |
+| ![Main Shutter](./screenshot/wear_shutter.png) | ![Sleep/Wake](./screenshot/wear_sleep.png) | ![Settings](./screenshot/wear_settings.png) |
 
 ## Project Introduction
 

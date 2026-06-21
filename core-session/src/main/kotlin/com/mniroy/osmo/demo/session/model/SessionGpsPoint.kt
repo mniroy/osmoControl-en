@@ -9,4 +9,5 @@ data class SessionGpsPoint(
     val horizontalAccuracyMeters: Float? = null,
     val provider: String? = null,
     val fixTimeMillis: Long? = null,
+    val satelliteCount: Int? = null,
 )

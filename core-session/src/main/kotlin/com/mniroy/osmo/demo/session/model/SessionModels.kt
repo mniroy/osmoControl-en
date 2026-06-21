@@ -141,6 +141,7 @@ data class SessionStatus(
     val lastKeyReportResult: String? = null,
     val lastRebootResult: String? = null,
     val gpsSignalLocked: Boolean = false,
+    val gpsSatelliteCount: Int? = null,
     val lastGpsCoordinate: String? = null,
     val lastGpsAltitudeMeters: Double? = null,
     val lastGpsSpeedMps: Float? = null,
