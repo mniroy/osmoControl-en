@@ -1015,7 +1015,7 @@ class BleSessionController(
             handshakeStage = HandshakeStage.IDLE,
             controllerDeviceId = controllerDeviceId,
             controllerMacAddress = formatMac(localControllerMac),
-            latestError = "Reconnecting (${reconnectAttempts}/$MAX_RECONNECT_ATTEMPTS)${reason?.let { ": $it" } ?: ""}",
+            latestError = "Reconnecting...${reason?.let { ": $it" } ?: ""}",
         )
         _cameraStatus.value = _cameraStatus.value.copy(detail = "Reconnecting to ${device.name}")
         reconnectJob = scope.launch {
@@ -1489,7 +1489,7 @@ class BleSessionController(
             0xBC.toByte(),
         )
         private const val RECONNECT_DELAY_MS = 1_000L
-        private const val MAX_RECONNECT_ATTEMPTS = 3
+        private const val MAX_RECONNECT_ATTEMPTS = 0
         private const val COMMAND_TIMEOUT_MS = 3_000L
     }
 

@@ -72,6 +72,8 @@ fun AppRoot(container: AppContainer) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
                 viewModel.updatePrerequisites(context.collectPrerequisites(prefs))
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                viewModel.disconnect(forget = false)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

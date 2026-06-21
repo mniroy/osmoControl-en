@@ -5,7 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,15 +17,41 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.rotary.onRotaryScrollEvent
+import androidx.compose.ui.unit.dp
+import androidx.compose.animation.Crossfade
+import androidx.activity.compose.BackHandler
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
+import androidx.wear.compose.material.Text
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material.CircularProgressIndicator
+import com.mniroy.osmo.demo.app.ui.home.DebugHomeState
+import com.mniroy.osmo.demo.session.model.SessionDevice
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.gestures.scrollBy
 import kotlin.math.abs
+import kotlin.math.min
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -104,82 +132,170 @@ fun WearMainScreen(
                             onDisconnect = onDisconnect
                         )
                     } else {
-                        val scrollState = rememberScrollState()
-                        val focusRequester = remember { FocusRequester() }
                         val coroutineScope = rememberCoroutineScope()
+                        val focusRequester = remember { FocusRequester() }
+                        val verticalPagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { 3 })
                         
+                        val rawModeOptions = state.workbenchUiModel.modeOptions
+                        val allowedModes = setOf(0x05, 0x01, 0x02, 0x0A)
+                        val modeOptions = remember(rawModeOptions) { rawModeOptions.filter { it.mode in allowedModes } }
+                        
+                        val currentMode = state.cameraStatus.mode
+                        val safeSize = modeOptions.size.takeIf { it > 0 } ?: 1
+                        val initialIndex = modeOptions.indexOfFirst { it.mode == currentMode }.takeIf { it >= 0 } ?: 0
+                        val initialPage = remember { (Int.MAX_VALUE / 2) / safeSize * safeSize + initialIndex }
+                        val horizontalPagerState = androidx.compose.foundation.pager.rememberPagerState(
+                            initialPage = initialPage,
+                            pageCount = { Int.MAX_VALUE }
+                        )
+
+                        // Sync pager with external mode changes
+                        LaunchedEffect(currentMode, modeOptions) {
+                            if (modeOptions.isNotEmpty()) {
+                                val targetIndex = modeOptions.indexOfFirst { it.mode == currentMode }
+                                if (targetIndex >= 0) {
+                                    val currentMod = horizontalPagerState.currentPage % modeOptions.size
+                                    if (currentMod != targetIndex) {
+                                        // find shortest path to target
+                                        var diff = targetIndex - currentMod
+                                        if (diff > modeOptions.size / 2) diff -= modeOptions.size
+                                        else if (diff < -modeOptions.size / 2) diff += modeOptions.size
+                                        horizontalPagerState.animateScrollToPage(horizontalPagerState.currentPage + diff)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Trigger mode switch when pager settles on a new page
+                        LaunchedEffect(horizontalPagerState.settledPage) {
+                            if (modeOptions.isNotEmpty() && state.workbenchUiModel.modeSwitchEnabled && !state.cameraStatus.recording) {
+                                val selectedMode = modeOptions[horizontalPagerState.settledPage % modeOptions.size].mode
+                                if (selectedMode != currentMode) {
+                                    onSwitchMode(selectedMode)
+                                }
+                            }
+                        }
+
                         // Debounce state for rotary
                         var lastScrollTime by remember { mutableStateOf(0L) }
                         var accumulatedScroll by remember { mutableStateOf(0f) }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .onRotaryScrollEvent { event ->
-                                    // Mode Selection via Bezel
-                                    val now = System.currentTimeMillis()
-                                    if (now - lastScrollTime > 300) {
-                                        accumulatedScroll = 0f
-                                    }
-                                    lastScrollTime = now
-                                    accumulatedScroll += event.verticalScrollPixels
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            val watchBattery = rememberBatteryLevel()
+                            val cameraBattery = state.cameraStatus.batteryPercent / 100f
+                            
+                            androidx.wear.compose.material.CircularProgressIndicator(
+                                progress = watchBattery,
+                                modifier = Modifier.fillMaxSize().padding(2.dp),
+                                indicatorColor = Color(0xFF2196F3),
+                                trackColor = Color.DarkGray,
+                                strokeWidth = 3.dp
+                            )
+                            
+                            androidx.wear.compose.material.CircularProgressIndicator(
+                                progress = cameraBattery,
+                                modifier = Modifier.fillMaxSize().padding(6.dp),
+                                indicatorColor = LimeAccent,
+                                trackColor = Color.DarkGray,
+                                strokeWidth = 3.dp
+                            )
 
-                                    val threshold = 50f
-                                    if (abs(accumulatedScroll) > threshold) {
-                                        val modeOptions = state.workbenchUiModel.modeOptions
-                                        val currentMode = state.cameraStatus.mode
-                                        if (modeOptions.isNotEmpty() && state.workbenchUiModel.modeSwitchEnabled && !state.cameraStatus.recording) {
-                                            val currentIndex = modeOptions.indexOfFirst { it.mode == currentMode }.takeIf { it >= 0 } ?: 0
-                                            if (accumulatedScroll > 0 && currentIndex < modeOptions.size - 1) {
-                                                onSwitchMode(modeOptions[currentIndex + 1].mode)
-                                            } else if (accumulatedScroll < 0 && currentIndex > 0) {
-                                                onSwitchMode(modeOptions[currentIndex - 1].mode)
+                            androidx.compose.foundation.pager.VerticalPager(
+                                state = verticalPagerState,
+                                modifier = Modifier.fillMaxSize()
+                            ) { page ->
+                                if (page == 0) {
+                                // Main Shutter Screen with HorizontalPager for modes
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .onRotaryScrollEvent { event ->
+                                            val now = System.currentTimeMillis()
+                                            if (now - lastScrollTime > 300) {
+                                                accumulatedScroll = 0f
                                             }
+                                            lastScrollTime = now
+                                            accumulatedScroll += event.verticalScrollPixels
+                                            
+                                            val threshold = 30f
+                                            if (abs(accumulatedScroll) > threshold) {
+                                                if (modeOptions.isNotEmpty() && state.workbenchUiModel.modeSwitchEnabled && !state.cameraStatus.recording) {
+                                                    val currentIndex = horizontalPagerState.currentPage
+                                                    val nextIndex = if (accumulatedScroll > 0) {
+                                                        currentIndex + 1
+                                                    } else {
+                                                        currentIndex - 1
+                                                    }
+                                                    coroutineScope.launch {
+                                                        horizontalPagerState.animateScrollToPage(nextIndex)
+                                                    }
+                                                }
+                                                accumulatedScroll = 0f
+                                            }
+                                            true
                                         }
-                                        accumulatedScroll = 0f
-                                    }
-                                    true // Consume the event so it doesn't scroll the screen vertically
-                                }
-                                .focusRequester(focusRequester)
-                                .focusable()
-                        ) {
-                            LaunchedEffect(Unit) {
-                                focusRequester.requestFocus()
-                            }
-
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(scrollState),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                // First "page" is ShutterScreen
-                                Box(modifier = Modifier.fillParentMaxSize()) {
-                                    ShutterScreen(state = state, onToggleRecord = onToggleRecord)
-                                }
-                                
-                                // Spacer to separate shutter from settings
-                                Spacer(modifier = Modifier.height(24.dp))
-                                
-                                // Settings button at the bottom
-                                Button(
-                                    onClick = { showSettings = true },
-                                    modifier = Modifier.size(48.dp),
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E1E1E))
+                                        .focusRequester(focusRequester)
+                                        .focusable()
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Settings,
-                                        contentDescription = "Settings",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(24.dp)
-                                    )
+                                    LaunchedEffect(Unit) {
+                                        focusRequester.requestFocus()
+                                    }
+                                    
+                                    androidx.compose.foundation.pager.HorizontalPager(
+                                        state = horizontalPagerState,
+                                        modifier = Modifier.fillMaxSize()
+                                    ) { page ->
+                                        val pageModeLabel = if (modeOptions.isNotEmpty()) {
+                                            val label = modeOptions[page % modeOptions.size].label
+                                            if (label.isBlank()) modeOptions[page % modeOptions.size].mode.toString() else label
+                                        } else null
+                                        ShutterScreen(state = state, onToggleRecord = onToggleRecord, targetModeLabel = pageModeLabel)
+                                    }
                                 }
-                                
-                                Spacer(modifier = Modifier.height(32.dp))
+                            } else if (page == 1) {
+                                // Sleep / Wake Screen
+                                val sleeping = state.sessionStatus.sleeping
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Button(
+                                        onClick = { if (sleeping) onWake() else onSleep() },
+                                        modifier = Modifier.size(80.dp),
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E1E1E))
+                                    ) {
+                                        Text(
+                                            text = if (sleeping) "WAKE" else "SLEEP",
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp
+                                        )
+                                    }
+                                }
+                            } else {
+                                // Settings Big Button Screen
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Button(
+                                        onClick = { showSettings = true },
+                                        modifier = Modifier.size(80.dp),
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E1E1E))
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Settings,
+                                            contentDescription = "Settings",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
-                    }
-                }
+                    } // end Box
+                    } // end else
+                } // end WearAppTheme
             } else {
                 WearAppTheme {
                     ConnectScreen(

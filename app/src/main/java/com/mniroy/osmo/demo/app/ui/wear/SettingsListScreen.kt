@@ -1,5 +1,7 @@
 package com.mniroy.osmo.demo.app.ui.wear
 
+import androidx.activity.compose.BackHandler
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +28,7 @@ import androidx.wear.compose.material.Text
 import com.mniroy.osmo.demo.app.ui.home.DebugHomeState
 
 enum class SettingsDestination {
-    MENU, MODE, GPS, ACTIONS, STATUS
+    MENU, STATUS
 }
 
 @Composable
@@ -42,6 +44,14 @@ fun SettingsListScreen(
     onDisconnect: () -> Unit,
 ) {
     var destination by remember { mutableStateOf(SettingsDestination.MENU) }
+
+    BackHandler {
+        if (destination != SettingsDestination.MENU) {
+            destination = SettingsDestination.MENU
+        } else {
+            onClose()
+        }
+    }
 
     when (destination) {
         SettingsDestination.MENU -> {
@@ -69,52 +79,21 @@ fun SettingsListScreen(
                         )
                     }
                     item {
-                        SettingsChip(label = "Mode Selection", onClick = { destination = SettingsDestination.MODE })
-                    }
-                    item {
-                        SettingsChip(label = "GPS", onClick = { destination = SettingsDestination.GPS })
-                    }
-                    item {
                         SettingsChip(label = "Status", onClick = { destination = SettingsDestination.STATUS })
                     }
                     item {
-                        SettingsChip(label = "Actions & Disconnect", onClick = { destination = SettingsDestination.ACTIONS })
+                        SettingsChip(
+                            label = "Manage Connection",
+                            onClick = {
+                                onClose()
+                                onDisconnect()
+                            }
+                        )
                     }
                     item {
                         SettingsChip(label = "Back to Camera", onClick = onClose, backgroundColor = Color(0xFF1E1E1E))
                     }
                 }
-            }
-        }
-        SettingsDestination.MODE -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                ModeSelectScreen(state = state, onSwitchMode = onSwitchMode)
-                BackButton(onClick = { destination = SettingsDestination.MENU })
-            }
-        }
-        SettingsDestination.GPS -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                GpsScreen(
-                    state = state,
-                    onSetGpsAutoPushEnabled = onSetGpsAutoPushEnabled,
-                    onSetGpsAutoPushFrequencyHz = onSetGpsAutoPushFrequencyHz
-                )
-                BackButton(onClick = { destination = SettingsDestination.MENU })
-            }
-        }
-        SettingsDestination.ACTIONS -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                DeviceActionsScreen(
-                    state = state,
-                    onSleep = onSleep,
-                    onWake = onWake,
-                    onRequestVersion = onRequestVersion,
-                    onNavigateToConnect = { 
-                        onClose()
-                        onDisconnect()
-                    }
-                )
-                BackButton(onClick = { destination = SettingsDestination.MENU })
             }
         }
         SettingsDestination.STATUS -> {

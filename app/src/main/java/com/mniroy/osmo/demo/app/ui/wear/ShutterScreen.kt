@@ -23,6 +23,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.CircularProgressIndicator
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import com.mniroy.osmo.demo.app.ui.home.DebugHomeState
 import com.mniroy.osmo.demo.app.ui.home.formatDuration
 import com.mniroy.osmo.demo.app.ui.home.isPhotoCaptureMode
@@ -31,9 +41,32 @@ import com.mniroy.osmo.demo.app.ui.home.isPhotoCaptureMode
  * Main Wear OS screen: Minimalist timer and stats with a large clickable area.
  */
 @Composable
+fun rememberBatteryLevel(): Float {
+    val context = LocalContext.current
+    val batteryLevel = remember { mutableStateOf(1f) }
+    DisposableEffect(context) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val level = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+                val scale = intent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
+                if (level != -1 && scale != -1) {
+                    batteryLevel.value = level / scale.toFloat()
+                }
+            }
+        }
+        context.registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        onDispose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+    return batteryLevel.value
+}
+
+@Composable
 fun ShutterScreen(
     state: DebugHomeState,
     onToggleRecord: () -> Unit,
+    targetModeLabel: String? = null
 ) {
     val camera = state.cameraStatus
     val session = state.sessionStatus
@@ -41,7 +74,7 @@ fun ShutterScreen(
     val recording = camera.recording && !photoMode
     val controlReady = session.protocolReady && !session.sleeping
 
-    val modeLabel = when {
+    val modeLabel = targetModeLabel?.uppercase() ?: when {
         photoMode -> "PHOTO"
         else -> camera.modeName.ifBlank { camera.modeLabel }.uppercase()
     }
@@ -50,7 +83,7 @@ fun ShutterScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(Color.Transparent), // Changed to transparent so rings behind it are visible
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -113,22 +146,16 @@ fun ShutterScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            // Bottom stats (Battery, SD, GPS horizontally)
+            // Bottom stats (SD, GPS horizontally)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "${camera.batteryPercent}%",
+                    text = "SD ${formatDuration(camera.remainTimeSeconds.toLong())}",
                     color = Color.White,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
-                )
-                
-                Text(
-                    text = "SD ${formatDuration(camera.remainTimeSeconds.toLong())}",
-                    color = Color.LightGray,
-                    fontSize = 12.sp,
                 )
                 
                 if (session.gpsSignalLocked) {

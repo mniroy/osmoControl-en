@@ -45,12 +45,8 @@ class DebugHomeViewModel internal constructor(
     private var lastLoggedHandshakeSummary: String? = null
     private var lastLoggedLogCount: Int = 0
 
-    init {
-        observeController()
-        autoConnectIfPossible()
-    }
 
-    private fun autoConnectIfPossible() {
+    private fun populateKnownDeviceIfDisconnected() {
         if (_state.value.sessionStatus.protocolReady || _state.value.sessionStatus.connectedDevice != null) {
             return // Already connected or connecting
         }
@@ -58,7 +54,7 @@ class DebugHomeViewModel internal constructor(
         if (lastDevice != null) {
             val (mac, name) = lastDevice
             val device = SessionDevice(name = name, macAddress = mac, deviceId = mac.hashCode().toLong())
-            connect(device)
+            _state.update { it.copy(discoveredDevices = listOf(device)) }
         }
     }
 
@@ -140,8 +136,10 @@ class DebugHomeViewModel internal constructor(
     fun startScan() = launch("Starting scan") { activeController.startScan() }
     fun stopScan() = launch("Stopping scan") { activeController.stopScan() }
     fun connect(device: SessionDevice) = launch("Connecting ${device.name}") { activeController.connect(device) }
-    fun disconnect() = launch("Disconnecting") {
-        appPreferences.setLastConnectedDevice(null, null)
+    fun disconnect(forget: Boolean = true) = launch("Disconnecting") {
+        if (forget) {
+            appPreferences.setLastConnectedDevice(null, null)
+        }
         activeController.disconnect()
         _state.update { it.copy(selectedConnectionDeviceId = null) }
     }
@@ -206,6 +204,11 @@ class DebugHomeViewModel internal constructor(
 
     private val busyActionId = AtomicLong()
     private val activeBusyActions = mutableListOf<BusyActionToken>()
+
+    init {
+        observeController()
+        populateKnownDeviceIfDisconnected()
+    }
 
     private fun launch(label: String, block: suspend () -> Unit) {
         viewModelScope.launch {

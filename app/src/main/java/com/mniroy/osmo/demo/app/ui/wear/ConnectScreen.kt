@@ -120,21 +120,24 @@ fun ConnectScreen(
                     else ->
                         "Start Scan" to SpeedAccent.copy(alpha = 0.8f)
                 }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        when (phase) {
-                            WorkbenchConnectionPhase.READY,
-                            WorkbenchConnectionPhase.CONNECTING,
-                            WorkbenchConnectionPhase.PREPARING -> onDisconnect()
-                            WorkbenchConnectionPhase.SCANNING -> onStopScan()
-                            else -> onStartScan()
-                        }
-                    },
-                    enabled = true,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = bgColor),
-                ) {
-                    Text(text = label, fontSize = 12.sp)
+                val hideStartScan = phase == WorkbenchConnectionPhase.IDLE && state.discoveredDevices.isNotEmpty()
+                if (!hideStartScan) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            when (phase) {
+                                WorkbenchConnectionPhase.READY,
+                                WorkbenchConnectionPhase.CONNECTING,
+                                WorkbenchConnectionPhase.PREPARING -> onDisconnect()
+                                WorkbenchConnectionPhase.SCANNING -> onStopScan()
+                                else -> onStartScan()
+                            }
+                        },
+                        enabled = true,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = bgColor),
+                    ) {
+                        Text(text = label, fontSize = 12.sp)
+                    }
                 }
             }
 
