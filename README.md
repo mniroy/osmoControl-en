@@ -1,4 +1,4 @@
-# osmoControl
+# osmoControl (Wear OS Edition)
 
 [GitHub Repository](https://github.com/AlliotTech/osmoControl)
 
@@ -10,26 +10,25 @@
 
 ## Project Introduction
 
-osmoControl is an Android control demo designed for Osmo devices. The goal is to use a smartphone to replace most common functions of a hardware Bluetooth remote control, facilitating demonstrations, joint debugging, and feature validation.
+osmoControl (Wear OS Edition) is a smartwatch adaptation designed for Osmo cameras. The goal is to use a Wear OS smartwatch to seamlessly replace most common functions of a hardware Bluetooth remote control, right from your wrist!
 
-In addition to basic Bluetooth control capabilities, the project supports pushing smartphone GPS data to the device link, which is used for validating the process of embedding location information into videos or related media materials.
+In addition to basic Bluetooth control capabilities, this Wear OS project continuously pushes the smartwatch's GPS data to the camera, seamlessly embedding your location, speed, and track directly into the video telemetry—even keeping the telemetry channel alive during GPS drops.
 
 ## Core Capabilities
 
-- Scan and connect to Osmo devices to establish a Bluetooth session.
-- Replaces most common control functions of a hardware Bluetooth remote.
-- Supports recording control, shooting trigger, mode switching, sleep, and wake operations.
-- Supports GPS push, automatic synchronization, and frequency adjustment.
-- Supports debug console to view status, logs, and protocol interaction results.
-- Supports fake device mode for UI demonstrations and process debugging without a real device.
+- **Wear OS Native**: Fully adapted for circular smartwatch displays with intuitive vertical/horizontal swipe navigation.
+- **Rotary Bezel Support**: Switch between camera modes fluidly using your smartwatch's rotary crown/bezel.
+- **Smart Connectivity**: Scan and connect to Osmo devices via Bluetooth with robust auto-connection management.
+- **Remote Control**: Start/Stop recording, trigger the shutter, switch modes, and toggle the camera's sleep/wake states effortlessly.
+- **Robust GPS Telemetry**: Real-time push of the watch's GPS data with satellite counts. Keeps the data channel active to ensure no metadata track loss during video recording.
+- **Battery Status**: Dual-battery rings on the main screen to keep track of both your watch and the camera's power levels at a glance.
 
 ## Applicable Scenarios
 
-- As a mobile alternative prototype for a hardware Bluetooth remote.
-- Validate camera control links and interaction processes.
-- Validate GPS reporting and video location information embedding capabilities.
-- Used for internal demonstrations, test debugging, and protocol debugging.
+- As a wearable, hands-free alternative to the official hardware Bluetooth remote.
+- Quick control while riding, hiking, or participating in action sports.
+- Reliably embed GPS route and telemetry into your action videos without carrying a phone.
 
 ## Note
 
-This is a Demo / debugging project. The focus is on validating control capabilities and communication flows, not aiming to be a consumer-grade official product.
+This is an experimental/debugging adaptation project built for Wear OS. The focus is on validating Bluetooth control capabilities and seamless telemetry streams, but it may lack some consumer-grade polish.
