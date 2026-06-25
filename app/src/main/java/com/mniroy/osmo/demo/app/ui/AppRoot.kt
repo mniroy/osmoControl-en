@@ -10,6 +10,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -58,6 +59,12 @@ fun AppRoot(container: AppContainer) {
     }
 
     OsmoDemoTheme(darkTheme = darkThemeEnabled) {
+        var showExitDialog by remember { mutableStateOf(false) }
+
+        androidx.activity.compose.BackHandler(enabled = !showExitDialog) {
+            showExitDialog = true
+        }
+
         DebugHomeScreen(
             viewModel = viewModel,
             darkThemeEnabled = darkThemeEnabled,
@@ -66,13 +73,46 @@ fun AppRoot(container: AppContainer) {
                 appPreferences.setDarkThemeEnabled(enabled)
             },
         )
+
+        androidx.wear.compose.material.dialog.Dialog(
+            showDialog = showExitDialog,
+            onDismissRequest = { showExitDialog = false }
+        ) {
+            androidx.wear.compose.material.dialog.Alert(
+                title = { 
+                    androidx.wear.compose.material.Text(
+                        text = "Close Remote?", 
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = androidx.compose.ui.Modifier.fillMaxWidth()
+                    ) 
+                },
+                negativeButton = {
+                    androidx.wear.compose.material.Button(
+                        onClick = { showExitDialog = false }, 
+                        colors = androidx.wear.compose.material.ButtonDefaults.secondaryButtonColors()
+                    ) {
+                        androidx.wear.compose.material.Text("No")
+                    }
+                },
+                positiveButton = {
+                    androidx.wear.compose.material.Button(
+                        onClick = {
+                            showExitDialog = false
+                            context.findActivity()?.finish()
+                        }
+                    ) {
+                        androidx.wear.compose.material.Text("Yes")
+                    }
+                }
+            )
+        }
     }
 
     DisposableEffect(lifecycleOwner, context, viewModel) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
                 viewModel.updatePrerequisites(context.collectPrerequisites(prefs))
-            } else if (event == Lifecycle.Event.ON_STOP) {
+            } else if (event == Lifecycle.Event.ON_DESTROY) {
                 viewModel.disconnect(forget = false)
             }
         }

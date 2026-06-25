@@ -1,0 +1,59 @@
+--- app/src/main/java/com/mniroy/osmo/demo/app/gps/AndroidGpsPointProvider.kt
++++ app/src/main/java/com/mniroy/osmo/demo/app/gps/AndroidGpsPointProvider.kt
+@@ -10,6 +10,7 @@
+ import android.location.Location
+ import android.location.LocationManager
++import android.location.LocationListener
+ import androidx.core.content.ContextCompat
+ import com.mniroy.osmo.demo.session.model.SessionGpsPoint
+ import java.util.concurrent.Executor
+ 
+@@ -19,6 +20,11 @@
+     private val appContext = context.applicationContext
+     private val locationManager = appContext.getSystemService(LocationManager::class.java)
++    private var isListening = false
++    private val locationListener = LocationListener { location ->
++        cachedPoint = location.toSessionGpsPoint()
++    }
++
+     @Volatile
+     private var cachedPoint: SessionGpsPoint? = null
+     @Volatile
+@@ -29,7 +35,7 @@
+     @SuppressLint("MissingPermission")
+     fun latestPoint(): SessionGpsPoint? {
+         if (locationManager == null || !hasFineLocationPermission()) return null
+-        maybeRequestCurrentLocation()
++        ensureListening()
+         val now = System.currentTimeMillis()
+         val candidates = listOfNotNull(
+@@ -46,20 +52,15 @@
+     }
+ 
+     @SuppressLint("MissingPermission")
+-    private fun maybeRequestCurrentLocation() {
+-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+-        val now = System.currentTimeMillis()
+-        if (now - lastActiveRequestAtMs < activeRequestMinIntervalMs) return
+-        lastActiveRequestAtMs = now
+-        locationManager?.getCurrentLocation(
+-            LocationManager.GPS_PROVIDER,
+-            null,
+-            DirectExecutor,
+-        ) { location ->
+-            if (location != null) {
+-                cachedPoint = location.toSessionGpsPoint()
+-            }
+-        }
++    private fun ensureListening() {
++        if (isListening || locationManager == null) return
++        try {
++            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, activeRequestMinIntervalMs, 0f, locationListener)
++            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, activeRequestMinIntervalMs, 0f, locationListener)
++            isListening = true
++        } catch (e: Exception) {
++            // Ignore
++        }
+     }
+ 
+     private fun hasFineLocationPermission(): Boolean {

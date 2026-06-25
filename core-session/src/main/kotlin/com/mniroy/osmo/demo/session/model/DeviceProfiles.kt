@@ -51,6 +51,13 @@ private val DEBUG_ONLY_CAPABILITIES = DeviceCapabilities(
     statusPresentationStyle = StatusPresentationStyle.DEBUG_ONLY,
 )
 
+// DJI RSDK devices whose camera family wasn't identified — GPS push still works on real hardware.
+// supportsWorkbench=true is needed so debugOnlyProfile=false, which unblocks the GPS action gate.
+private val RSDK_UNKNOWN_CAPABILITIES = DEBUG_ONLY_CAPABILITIES.copy(
+    supportsWorkbench = true,
+    supportsGpsPush = true,
+)
+
 private val UNKNOWN_CAPABILITIES = DEBUG_ONLY_CAPABILITIES.copy(
     supportsVersionQuery = false,
     supportsDebugConsole = false,
@@ -169,7 +176,7 @@ private fun capabilitiesFor(
             cameraFamily == CameraFamily.ACTION_5_PRO ||
             cameraFamily == CameraFamily.ACTION_6 -> ACTION_CAPABILITIES
         cameraFamily == CameraFamily.OSMO_360 -> OSMO_360_CAPABILITIES
-        protocolFamily == ProtocolFamily.DJI_RSDK_ACTION -> DEBUG_ONLY_CAPABILITIES
+        protocolFamily == ProtocolFamily.DJI_RSDK_ACTION -> RSDK_UNKNOWN_CAPABILITIES
         else -> UNKNOWN_CAPABILITIES
     }
 }

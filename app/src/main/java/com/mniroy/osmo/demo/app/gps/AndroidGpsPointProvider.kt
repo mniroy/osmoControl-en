@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.mniroy.osmo.demo.session.model.SessionGpsPoint
@@ -16,6 +17,10 @@ class AndroidGpsPointProvider(
 ) {
     private val appContext = context.applicationContext
     private val locationManager = appContext.getSystemService(LocationManager::class.java)
+    private var isListening = false
+    private val locationListener = LocationListener { location ->
+        cachedPoint = location.toSessionGpsPoint()
+    }
     @Volatile
     private var cachedPoint: SessionGpsPoint? = null
     @Volatile
@@ -26,14 +31,20 @@ class AndroidGpsPointProvider(
     @SuppressLint("MissingPermission")
     fun latestPoint(): SessionGpsPoint? {
         if (locationManager == null || !hasFineLocationPermission()) return null
-        maybeRequestCurrentLocation()
+        ensureListening()
         val now = System.currentTimeMillis()
+        
+        val cp = cachedPoint
+        if (cp != null && isFreshCachedPoint(cp, now)) {
+            return cp
+        }
+
         val candidates = listOfNotNull(
             locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER),
             locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
             locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER),
         )
-        val best = selectBestLocation(candidates, now) ?: return cachedPoint?.takeIf { isFreshCachedPoint(it, now) }
+        val best = selectBestLocation(candidates, now) ?: return null
         val point = best.toSessionGpsPoint()
         cachedPoint = point
         return point
@@ -44,19 +55,14 @@ class AndroidGpsPointProvider(
     }
 
     @SuppressLint("MissingPermission")
-    private fun maybeRequestCurrentLocation() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
-        val now = System.currentTimeMillis()
-        if (now - lastActiveRequestAtMs < activeRequestMinIntervalMs) return
-        lastActiveRequestAtMs = now
-        locationManager?.getCurrentLocation(
-            LocationManager.GPS_PROVIDER,
-            null,
-            DirectExecutor,
-        ) { location ->
-            if (location != null) {
-                cachedPoint = location.toSessionGpsPoint()
-            }
+    private fun ensureListening() {
+        if (isListening || locationManager == null) return
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, activeRequestMinIntervalMs, 0f, locationListener)
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, activeRequestMinIntervalMs, 0f, locationListener)
+            isListening = true
+        } catch (e: Exception) {
+            // ignore
         }
     }
 
@@ -116,7 +122,7 @@ class AndroidGpsPointProvider(
         private const val DEFAULT_ACTIVE_REQUEST_MIN_INTERVAL_MS = 1_000L
         private const val MAX_LOCATION_AGE_MS = 60_000L
         private const val MAX_ACCEPTABLE_ACCURACY_METERS = 100f
-        private const val AGE_PENALTY_PER_SECOND = 3f
+        private const val AGE_PENALTY_PER_SECOND = 30f
 
         private object DirectExecutor : Executor {
             override fun execute(command: Runnable) = command.run()
