@@ -17,6 +17,7 @@ class AndroidGpsPointProvider(
 ) {
     private val appContext = context.applicationContext
     private val locationManager = appContext.getSystemService(LocationManager::class.java)
+    @Volatile
     private var isListening = false
     private val locationListener = LocationListener { location ->
         cachedPoint = location.toSessionGpsPoint()
@@ -57,13 +58,16 @@ class AndroidGpsPointProvider(
     @SuppressLint("MissingPermission")
     private fun ensureListening() {
         if (isListening || locationManager == null) return
+        var anyRegistered = false
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, activeRequestMinIntervalMs, 0f, locationListener)
+            anyRegistered = true
+        } catch (_: Exception) {}
+        try {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, activeRequestMinIntervalMs, 0f, locationListener)
-            isListening = true
-        } catch (e: Exception) {
-            // ignore
-        }
+            anyRegistered = true
+        } catch (_: Exception) {}
+        if (anyRegistered) isListening = true
     }
 
     private fun hasFineLocationPermission(): Boolean {
@@ -83,8 +87,10 @@ class AndroidGpsPointProvider(
         val ageMs = (nowMs - location.time).coerceAtLeast(0L)
         if (ageMs > MAX_LOCATION_AGE_MS) return false
         val accuracyMeters = location.accuracy
-        if (accuracyMeters.isNaN() || accuracyMeters <= 0f) return false
-        return accuracyMeters <= MAX_ACCEPTABLE_ACCURACY_METERS
+        // accuracy=0f is reported on WearOS when the field is unavailable — treat it as unknown/permissive
+        // Only hard-reject NaN or negative values which indicate a corrupt fix
+        if (accuracyMeters.isNaN() || accuracyMeters < 0f) return false
+        return accuracyMeters == 0f || accuracyMeters <= MAX_ACCEPTABLE_ACCURACY_METERS
     }
 
     private fun locationScore(location: Location, nowMs: Long): Float {
@@ -120,8 +126,9 @@ class AndroidGpsPointProvider(
 
     private companion object {
         private const val DEFAULT_ACTIVE_REQUEST_MIN_INTERVAL_MS = 1_000L
-        private const val MAX_LOCATION_AGE_MS = 60_000L
-        private const val MAX_ACCEPTABLE_ACCURACY_METERS = 100f
+        // Raised from 60s to 300s — WearOS frequently has stale cached fixes during initial acquisition
+        private const val MAX_LOCATION_AGE_MS = 300_000L
+        private const val MAX_ACCEPTABLE_ACCURACY_METERS = 200f
         private const val AGE_PENALTY_PER_SECOND = 30f
 
         private object DirectExecutor : Executor {

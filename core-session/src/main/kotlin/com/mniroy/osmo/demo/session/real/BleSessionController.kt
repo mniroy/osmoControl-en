@@ -46,7 +46,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.OffsetDateTime
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -587,13 +586,13 @@ class BleSessionController(
         val point = lastGpsPoint
         val signalLocked = currentPoint != null
         val sentAtMs = System.currentTimeMillis()
-        val nowUtc = OffsetDateTime.now(java.time.ZoneOffset.UTC)
+        val nowLocal = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Shanghai"))
 
         val payload = if (point != null) {
             val (speedNorthCmps, speedEastCmps) = gpsSpeedComponents(point)
             GpsDataPayload(
-                yearMonthDay = nowUtc.year * 10_000 + nowUtc.monthValue * 100 + nowUtc.dayOfMonth,
-                hourMinuteSecond = (nowUtc.hour + 8) * 10_000 + nowUtc.minute * 100 + nowUtc.second,
+                yearMonthDay = nowLocal.year * 10_000 + nowLocal.monthValue * 100 + nowLocal.dayOfMonth,
+                hourMinuteSecond = nowLocal.hour * 10_000 + nowLocal.minute * 100 + nowLocal.second,
                 longitudeE7 = (point.longitude * 10_000_000).toInt(),
                 latitudeE7 = (point.latitude * 10_000_000).toInt(),
                 heightMm = (point.altitudeMeters * 1000).toInt(),
@@ -607,8 +606,8 @@ class BleSessionController(
             )
         } else {
             GpsDataPayload(
-                yearMonthDay = nowUtc.year * 10_000 + nowUtc.monthValue * 100 + nowUtc.dayOfMonth,
-                hourMinuteSecond = (nowUtc.hour + 8) * 10_000 + nowUtc.minute * 100 + nowUtc.second,
+                yearMonthDay = nowLocal.year * 10_000 + nowLocal.monthValue * 100 + nowLocal.dayOfMonth,
+                hourMinuteSecond = nowLocal.hour * 10_000 + nowLocal.minute * 100 + nowLocal.second,
                 longitudeE7 = 0,
                 latitudeE7 = 0,
                 heightMm = 0,
